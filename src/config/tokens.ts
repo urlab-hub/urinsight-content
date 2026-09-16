@@ -9,8 +9,8 @@ export const tokens = {
   },
   font: { family: 'Pretendard', regular: 400, bold: 700 },
   layout: { left: 110, right: 110, width: 860 },
-  // Ink-bound highlights: zero horizontal padding; vertical insets match v6 rectangles.
-  highlight: { cover: { top: 2, bottom: 2 }, body: { top: 1, bottom: 3 }, summary: { top: 2, bottom: 3 }, summaryKey: { top: 3, bottom: 3 }, insight: { top: 2, bottom: 3 } },
+  // Background-only optical padding; capped at adjacent spaces/ink without changing text advance.
+  highlight: { horizontal: { left: 5, right: 7, inkGap: 1 }, cover: { top: 2, bottom: 2 }, body: { top: 1, bottom: 3 }, summary: { top: 2, bottom: 3 }, summaryKey: { top: 3, bottom: 3 }, insight: { top: 2, bottom: 3 } },
   cover: { brandTop: 306, brandSize: 28.8, titleTop: 393, titleSize: 89, titleLine: 116, titleWidth: 875, categoryTop: 780, categorySize: 32.5, categoryLetterSpacing: -1.25, footerTop: 919, footerSize: 20.5 },
   body: { brandTop: 303, brandSize: 18.3, titleTop: 395, titleSize: 42, titleLine: 52, titleLetterSpacing: -0.4, numberWidth: 44, textTop: 504, textSize: 30.5, textLine: 47, paragraphGap: 26, keyGap: 31, keySize: 30.7, keyLine: 43 },
   summary: { labelTop: 304, labelSize: 26, labelLetterSpacing: -1.2, titleTop: 394, titleSize: 46.4, titleLine: 64, textTop: 689, keyGap: 37, keySize: 30.8 },
