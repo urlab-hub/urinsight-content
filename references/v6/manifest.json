@@ -1,0 +1,38 @@
+[
+  {
+    "file": "00_contact_sheet.png",
+    "sha256": "1faa3db4281bc07e2ef56c69c5654e8068481f72246a4d5ab4a5fbc6d4a020ba"
+  },
+  {
+    "file": "01_cover.png",
+    "sha256": "e55c0179e3582af4cf0089af36ad75d90be698521e8f2fb9dae0f4e5e6eead41"
+  },
+  {
+    "file": "02_body.png",
+    "sha256": "9a7211ff535f0b647e4dbe560185205924141a0cf4b5f4394d3bc1ca7e5df757"
+  },
+  {
+    "file": "03_body.png",
+    "sha256": "ffe73184c8e8f0ba35c1b5fff9e824458628d17f3be9c7977d07d84ea2c4fe48"
+  },
+  {
+    "file": "04_body.png",
+    "sha256": "645751d6fdc4a4c094257cdaee8676dbe3657cb561fddf8a7f8d18a116dd8494"
+  },
+  {
+    "file": "05_body.png",
+    "sha256": "593c1d36780779ac24df800f73d0b67862092f89541d363659123de22f808aec"
+  },
+  {
+    "file": "06_body.png",
+    "sha256": "b6711df01e4de6c486d518a2e201891dff36ee094c6320b492d56c07dca446fe"
+  },
+  {
+    "file": "07_summary.png",
+    "sha256": "735bbe5eece4b76c9e8b52767f6225983cafaf069f828d71f35f816c9b067f25"
+  },
+  {
+    "file": "08_insight.png",
+    "sha256": "8116a015ebec0834d9f93c19b7fcc2f451601f9fd8271d66fd6a1933cc5448dc"
+  }
+]

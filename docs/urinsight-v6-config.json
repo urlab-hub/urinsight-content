@@ -1,0 +1,24 @@
+{
+  "version": "v6",
+  "canvas": {
+    "width": 1080,
+    "height": 1350,
+    "ratio": "4:5"
+  },
+  "font": "Pretendard",
+  "colors": {
+    "business": "#3B5BDB",
+    "money": "#1F8A5B",
+    "insight": "#FF5A36"
+  },
+  "slogan": "돈, 사업, 성공을 더 깊게 읽는 시선",
+  "defaultPages": 8,
+  "maxPages": 10,
+  "specRevision": "1.1",
+  "coverImageSystem": "v1",
+  "coverImagePriority": [
+    "rights-cleared real/editorial image",
+    "licensed stock/editorial stock",
+    "AI-generated editorial photography"
+  ]
+}

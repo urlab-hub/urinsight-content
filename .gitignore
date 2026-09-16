@@ -1,0 +1,43 @@
+node_modules/
+.pnpm-store/
+output/
+.tmp/
+*.log
+.env
+.env.*
+!.env.example
+
+# Playwright reports, downloaded browsers, and temporary artifacts
+test-results/
+playwright-report/
+playwright/.cache/
+.playwright/
+.local-browsers/
+blob-report/
+
+# Local caches and compiler artifacts
+.cache/
+.npm/
+.turbo/
+*.tsbuildinfo
+
+# Font binaries are installed through the locked Pretendard dependency
+*.woff
+*.woff2
+*.ttf
+*.otf
+*.eot
+*.ttc
+
+# OS and editor temporary files
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.tmp
+*.bak
