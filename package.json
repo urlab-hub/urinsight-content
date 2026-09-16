@@ -9,6 +9,9 @@
   },
   "scripts": {
     "generate": "tsx src/cli/generate.ts",
+    "draft": "tsx src/cli/draft.ts",
+    "prompt": "tsx src/cli/prompt.ts",
+    "draft:render": "tsx src/cli/draft-render.ts",
     "compare": "tsx src/cli/compare.ts",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",

@@ -1,6 +1,7 @@
 node_modules/
 .pnpm-store/
 output/
+drafts/
 .tmp/
 *.log
 .env

@@ -1,0 +1,25 @@
+{
+  "topic": "고객 유지와 구독 사업모델",
+  "slug": "customer-retention",
+  "requestedCategory": "business",
+  "angleHint": "반복 구매를 설계하는 관점",
+  "sources": [
+    {
+      "id": "editor-note",
+      "title": "편집자가 입력한 가설",
+      "publisher": "URINSIGHT editorial",
+      "url": "urn:urinsight:sample:customer-retention",
+      "publishedAt": "2026-09-16",
+      "type": "manual",
+      "isPrimary": false,
+      "summary": "실제 사례가 없는 편집 가설이다. 추가 조사와 검토가 필요하다.",
+      "facts": [
+        "고객 유지 관점에서 구독 사업모델을 검토한다."
+      ],
+      "quotes": []
+    }
+  ],
+  "notes": [
+    "prompt 명령용 예시다. mock provider가 이 주제의 원고를 생성하지는 않는다."
+  ]
+}

@@ -37,3 +37,17 @@ output/               날짜/slug별 생성물 (Git 제외)
 
 세부사항: [설계](docs/ARCHITECTURE.md), [폰트 라이선스](docs/FONT_LICENSE.md), [검토 보고서](docs/IMPLEMENTATION_REPORT.md).
 원본 자료의 수집·게시·commit 제안은 향후 참고 사항이며 이번 단계의 실행 지시가 아닙니다.
+
+## STEP 3: research → content
+
+유료 API 없이 deterministic mock으로 앞단을 검증합니다.
+
+```sh
+pnpm draft research/fixtures/information-and-judgment.json
+pnpm draft research/fixtures/information-and-judgment.json --provider mock
+pnpm prompt research/fixtures/information-and-judgment.json
+pnpm prompt research/samples/manual-business.json
+pnpm draft:render research/fixtures/information-and-judgment.json
+```
+
+`drafts/<한국 날짜>/<slug>/`에 렌더용 JSON, 출처/근거, 보고서, prompt를 저장합니다. BODY/SUMMARY의 sourceRefs는 엔진 원고와 sources.json에 보존하고 기존 renderer JSON에는 추가하지 않습니다. Mock은 승인된 v6 수동 fixture만 지원합니다. 다른 입력은 `prompt`로 production prompt를 만들 수 있으며 실제 LLM 호출은 구현하지 않았습니다. 상세 계약과 제한: [STEP3_CONTENT_ENGINE.md](docs/STEP3_CONTENT_ENGINE.md).
