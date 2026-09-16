@@ -1,6 +1,12 @@
 node_modules/
 .pnpm-store/
 output/
+# Local drafts retained from the separately preserved content-engine snapshot
+drafts/
+inbox/*
+!inbox/.gitkeep
+processed/*
+!processed/.gitkeep
 .tmp/
 *.log
 .env
