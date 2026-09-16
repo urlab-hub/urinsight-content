@@ -15,10 +15,11 @@ function Paragraphs({ paragraphs, lines }: { paragraphs: string[]; lines?: strin
   return <>{paragraphs.map((text, i) => <p data-check key={i}><EditorialText text={text} lines={lines?.[i]}/></p>)}</>;
 }
 export type Slide = { kind: 'cover' } | { kind: 'body'; index: number } | { kind: 'summary' } | { kind: 'insight' };
+export type InsightImage = { kind: 'provided' | 'cover-fallback'; dataUrl: string } | { kind: 'placeholder-fallback' };
 export function slidesFor(content: CarouselContent): Slide[] {
   return [{ kind: 'cover' }, ...content.body.map((_, index) => ({ kind: 'body' as const, index })), { kind: 'summary' }, { kind: 'insight' }];
 }
-function SlideContent({ content: c, slide, image }: { content: CarouselContent; slide: Slide; image?: string }) {
+function SlideContent({ content: c, slide, image, insightImage }: { content: CarouselContent; slide: Slide; image?: string; insightImage?: InsightImage }) {
   switch (slide.kind) {
     case 'cover': return <>
       {image && <img className="cover-image" src={image} alt=""/>}
@@ -37,13 +38,16 @@ function SlideContent({ content: c, slide, image }: { content: CarouselContent; 
       <div className="summary-copy copy" data-check><Paragraphs paragraphs={c.summary.paragraphs} lines={c.summary.paragraphLines}/><p className="summary-key" data-check><Highlight text={c.summary.keySentence} target={c.summary.keySentenceHighlight ?? c.summary.keySentence}/></p></div>
     </>;
     case 'insight': return <>
+      {insightImage && <div className="insight-visual" data-insight-mode={insightImage.kind}>
+        {insightImage.kind !== 'placeholder-fallback' && <><img className={`insight-image ${insightImage.kind}`} src={insightImage.dataUrl} alt=""/><div className="insight-overlay"/></>}
+      </div>}
       <div className="insight-label" data-check>{t.brand}</div>
       <h2 className="insight-title" data-check><EditorialText text={c.insight.headline} lines={c.insight.headlineLines} target={c.insight.highlight}/></h2>
       <footer className="insight-footer" data-check><div className="slogan" data-check>{t.slogan}</div><div className="footer-brand" data-check>{t.brand}</div></footer>
     </>;
   }
 }
-export function renderHtml(content: CarouselContent, slide: Slide, fontBase64: string, image?: string): string {
+export function renderHtml(content: CarouselContent, slide: Slide, fontBase64: string, image?: string, insightImage?: InsightImage): string {
   const css = `
     @font-face{font-family:Pretendard;src:url(data:font/woff2;base64,${fontBase64}) format('woff2');font-style:normal;font-weight:100 900;font-display:block}
     *{box-sizing:border-box}html,body{margin:0;width:${t.canvas.width}px;height:${t.canvas.height}px}body{font-family:${t.font.family};font-weight:${t.font.regular};font-synthesis:none;-webkit-font-smoothing:antialiased}
@@ -69,6 +73,10 @@ export function renderHtml(content: CarouselContent, slide: Slide, fontBase64: s
     .insight{background:${t.colors.dark};color:white}.insight-label{top:${t.insight.labelTop}px;font-size:${t.insight.labelSize}px;color:var(--accent)}
     .insight-title{top:${t.insight.titleTop}px;font-size:${t.insight.titleSize}px;line-height:${t.insight.titleLine}px;word-break:keep-all}
     .insight-footer{top:${t.insight.footerTop}px}.slogan{font-size:${t.insight.sloganSize}px;color:${t.colors.muted}}.footer-brand{font-size:${t.insight.brandSize}px;margin-top:${t.insight.brandGap}px}
+    .insight-visual{position:absolute;inset:0;overflow:hidden;pointer-events:none;background:${t.colors.dark}}
+    .insight-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${t.insightImage.position}}
+    .insight-image.cover-fallback{object-position:${t.insightImage.fallbackPosition};transform:scale(${t.insightImage.fallbackScale})}
+    .insight-overlay{position:absolute;inset:0;background:rgba(0,0,0,${t.insightImage.overlayOpacity})}
   `;
-  return '<!doctype html>' + renderToStaticMarkup(<html lang="ko"><head><meta charSet="utf-8"/><title>{content.slug}</title><style>{css}</style></head><body><main className={`slide ${slide.kind}`}><SlideContent content={content} slide={slide} image={image}/></main></body></html>);
+  return '<!doctype html>' + renderToStaticMarkup(<html lang="ko"><head><meta charSet="utf-8"/><title>{content.slug}</title><style>{css}</style></head><body><main className={`slide ${slide.kind}`}><SlideContent content={content} slide={slide} image={image} insightImage={insightImage}/></main></body></html>);
 }

@@ -1,12 +1,18 @@
 # URINSIGHT Carousel v6 — Baseline Specification
 
 - URINSIGHT Carousel Design: v6
-- Specification Revision: 1.2
+- Specification Revision: 1.3
 - Cover Image System: v1
 - Daily Workflow: v1
 - Last Updated: 2026-09-16
 
-이번 revision은 현재 구현된 디자인과 두 차례 실전 운영 테스트에서 확인한 편집 원칙을 반영한다. Carousel Design은 v6로 유지하며 v7로 변경하지 않는다. Specification Revision은 디자인 버전과 별도로 관리한다.
+Carousel Design은 v6로 유지하며 v7로 변경하지 않는다. Specification Revision은 디자인 버전과 별도로 관리한다. Revision 1.2에서 확정한 편집 원칙과 highlight 규칙은 유지하고, Revision 1.3에서는 이미지가 포함된 INSIGHT와 Cover–Insight 시각적 연속성을 제작 규칙으로 정의한다.
+
+Specification 1.3의 INSIGHT 이미지 layer와 package asset resolution을 구현했다. Daily Runner는 insight 파일 → 실제 cover → placeholder 순으로 선택한다. 이미지가 없는 placeholder fallback은 강한 경고와 품질검수 표시를 남기는 예외이며, 정상 운영 이미지 요건을 충족한 것으로 보지 않는다. 기존 pnpm generate는 runtime insightImage 옵션이 없으면 v6 dark-background 결과를 유지한다. 사진의 시리즈 연속성과 내용 적합성은 사람이 검수한다.
+
+Specification 1.2 복귀 기준 (수정·삭제하지 않음):
+- Commit: `9087e9d735fd15da64ff4831706b60f1648596b8`
+- Tag: `urinsight-operations-v1`
 
 ## Status
 - Version: v6
@@ -82,8 +88,11 @@ SUMMARY는 BODY를 다시 나열하거나 짧게 반복하는 페이지가 아�
 
 답해야 할 질문은 “앞의 여러 사실과 논거를 묶으면 어떤 구조가 보이는가?”다. BODY보다 한 단계 높은 해석을 제시한다. BODY에서 이미 사용한 핵심 문장을 그대로 다시 사용하지 않는다.
 
-## 8P Final
-- Dark background
+## 8P Final / INSIGHT
+
+INSIGHT는 항상 이미지가 포함된 고정형 마지막 페이지로 제작한다. Text-only INSIGHT는 기본 운영 규칙에서 사용하지 않는다. 9~10페이지 구성에서도 이 규칙은 마지막 INSIGHT 페이지에 적용한다.
+
+- Background / visual layer: Cover와 연관된 editorial image (Daily Runner의 1.3 이미지 모드; 기존 generate의 legacy dark background는 호환성 유지)
 - Upper label: URINSIGHT in category color
 - No separate INSIGHT label
 - Main insight sentence: bold
@@ -92,12 +101,56 @@ SUMMARY는 BODY를 다시 나열하거나 짧게 반복하는 페이지가 아�
 - Bottom slogan: bold, smaller than main text
 - Bottom URINSIGHT: thin / regular, smaller than slogan
 - No page number
+- 가독성을 위해 필요한 경우 dark overlay / gradient overlay를 사용할 수 있다. 과도한 장식은 추가하지 않는다.
+- 상단 URINSIGHT, category color, 강한 headline, category-color highlight, 하단 브랜드 slogan과 URINSIGHT 등 기존 v6 디자인 언어를 유지한다.
 
 ### INSIGHT editorial role
 
-INSIGHT는 SUMMARY를 한 줄로 압축하는 페이지가 아니다.
+INSIGHT는 캐러셀의 마지막 페이지다. 전체 내용을 단순 요약하거나 SUMMARY를 짧게 다시 쓰는 페이지가 아니다.
 
 답해야 할 질문은 “독자가 콘텐츠를 닫고도 기억해야 할 하나의 관점은 무엇인가?”다. SUMMARY와 다른 표현으로 작성하며, 정보 설명보다 관점과 기억성을 우선한다.
+
+이미지와 핵심 문장이 함께 마지막 여운을 만든다.
+
+### INSIGHT Text Rule
+
+이미지가 들어가더라도 텍스트가 최우선이다.
+
+- 가장 짧고 강한 관점을 남긴다.
+- SUMMARY와 다른 표현으로 작성한다.
+- 한 가지 메시지만 전달한다.
+- 핵심 구절 1개를 highlight한다.
+- 사진 위에서도 즉시 읽혀야 한다.
+
+이미지가 메시지를 방해하면 이미지를 다시 선정하거나 보정한다.
+
+### INSIGHT Image Style
+
+Cover Image System v1과 동일한 사진 언어를 따른다. 목표는 “잡지에서 촬영한 듯한 editorial photograph”다. “AI가 만든 멋있는 그림” 자체를 목표로 삼지 않는다.
+
+우선:
+
+- realistic editorial photography
+- documentary-like photography
+- natural/cinematic lighting
+- restrained colors
+- subtle grain
+- real-world environment
+- premium stock-like composition
+- generous negative space
+
+지양:
+
+- obvious AI art
+- excessive sci-fi
+- cosmic fantasy
+- glossy 3D
+- excessive glow
+- neon cyberpunk
+- surreal compositing
+- motivational poster aesthetic
+
+INSIGHT에서 SF/우주 표현은 주제 자체가 SF/우주를 직접 다루는 경우만 예외로 허용한다.
 
 ## Highlight Background Visual Padding
 
@@ -275,6 +328,145 @@ Reference mood:
 
 Do not copy Cosmos layouts or specific images.
 Use only the editorial mood, curation sensibility, visual restraint, and sense of space as reference.
+
+## Cover–Insight Visual Pairing
+
+## Cover–Insight Pair Production
+
+정상 실전 package는 제작 단계부터 Cover와 INSIGHT를 하나의 visual pair로 설계한다. 두 장은 같은 editorial world를 공유하되 Cover는 opener, INSIGHT는 closer다.
+
+```text
+URINSIGHT_YYYYMMDD_<slug>/
+├─ carousel.json
+├─ cover.png
+├─ insight.png
+└─ sources.md
+```
+
+정상 제작에서는 두 이미지를 모두 준비하는 것이 기본이다. 이미지 확장자는 jpg/jpeg/png/webp를 허용하며 package asset으로 관리한다. carousel.json schema는 변경하지 않는다. Fallback은 정상 제작 방식이 아닌 비상 안전장치다. 실전 게시 전 insight image를 별도로 준비하는 것을 원칙으로 한다.
+
+### AI-Generated Image Pair Rule
+
+1. Cover image를 먼저 생성한다.
+2. Cover image를 visual reference로 사용한다.
+3. 같은 인물·공간·조명·색감·photographic language를 유지한다.
+4. 다른 순간, 다른 앵글, 다른 framing의 Insight image를 파생 생성한다.
+
+두 이미지는 같은 editorial photo shoot에서 나온 첫 장면과 마지막 장면처럼 느껴져야 한다. 예를 들어 Cover가 마트 진열대에서 상품을 고르는 사람이라면, Insight는 같은 사람·마트·조명에서 카트를 밀고 이동하거나, 계산을 마치거나, 장바구니를 바라보는 정적인 장면으로 연결한다.
+
+금지:
+
+- Cover와 Insight를 서로 무관한 prompt로 독립 생성.
+- Cover는 실사인데 Insight는 SF/판타지인 구성.
+- 인물 외형·공간·시대·조명이 갑자기 바뀌는 구성.
+- 단순히 category color만 비슷한 이미지 조합.
+
+이 규칙은 package 제작 원칙이며 Daily Runner가 AI를 호출하거나 이미지를 생성한다는 뜻은 아니다.
+
+### Real / Stock / Public Figure Image Pair Rule
+
+실제 사진·stock·실존 인물 콘텐츠는 다음 순서로 선택한다.
+
+1. 같은 촬영 시리즈의 다른 컷
+2. 같은 인터뷰 / 행사 / 장소의 다른 컷
+3. 같은 인물·공간·오브젝트의 유사한 editorial 컷
+4. 동일 Cover image의 crop / zoom / framing 변경
+
+예: CEO 인터뷰의 Cover에는 같은 인터뷰 또는 행사에서 촬영된 다른 장면을 Insight로 연결한다. 실존 인물을 AI로 재생성하여 Insight를 만드는 것은 지양하며, 기존 실제 인물 사진 및 사용 권한 원칙을 따른다.
+
+### Cover / Insight Role Difference
+
+- Cover: 진입, 긴장, 시선을 잡는 첫 장면, 주제를 열어주는 이미지.
+- Insight: 정리, 여운, 조금 더 정적인 장면, 콘텐츠를 닫는 이미지.
+
+가능하면 Insight는 Cover보다 차분하고 정적인 framing을 사용한다. 연결된 이미지라도 같은 역할을 반복하지 않는다.
+
+### Fallback Operational Policy
+
+| status | 운영 의미 | requiresQualityReview |
+| --- | --- | --- |
+| provided | explicit insight image를 준비한 정상 상태 | false (일반 최종 검수는 유지) |
+| cover-fallback | cover alternate framing을 사용하는 허용 가능한 비상 상태; warning과 품질검수 필요 | true |
+| placeholder-fallback | 개발/비상 안전장치; 실제 게시 권장 상태가 아님 | true |
+
+현재 fallback 구현과 순서는 유지한다. 실제 게시 전 마지막 장을 반드시 검수하며, 정상 package의 두 이미지 준비를 fallback으로 대체하지 않는다.
+
+### Cover / Insight Image Relationship
+
+Cover와 INSIGHT는 각각 독립적인 랜덤 이미지가 아니다. 두 이미지는 반드시 “같은 editorial photo series에서 나온 것처럼” 느껴져야 한다.
+
+- Cover: 콘텐츠의 첫 장면. 관심을 끌고 주제로 진입시키는 이미지.
+- INSIGHT: 같은 이야기를 닫는 마지막 장면. 정리와 여운을 남기는 이미지.
+
+표지와 마지막 장은 역할은 다르지만 같은 세계에 있어야 한다. Cover를 선정할 때부터 INSIGHT용 연관 이미지를 확보할 수 있는지 고려한다.
+
+### Visual Continuity Rule
+
+Cover와 INSIGHT 이미지는 아래 항목 중 최소 3개 이상의 연결성을 가져야 한다.
+
+- 동일한 주제 축
+- 동일하거나 유사한 피사체 계열
+- 동일하거나 유사한 인물
+- 동일하거나 유사한 공간
+- 유사한 오브젝트
+- 유사한 색감
+- 유사한 조명
+- 비슷한 시간대
+- 유사한 무드
+- 유사한 구도 성격
+- 동일한 editorial texture / photographic language
+
+단순히 색깔만 비슷한 것은 충분한 연관성으로 보지 않는다. 최소 3개 조건과 함께 두 장이 같은 시리즈처럼 느껴지는지 확인한다. 가능하면 3개보다 더 많은 요소를 공유한다.
+
+### 좋은 예 / 나쁜 예
+
+좋은 예:
+
+| Cover | INSIGHT |
+| --- | --- |
+| 마트에서 상품을 고르는 소비자 | 같은 톤의 계산대, 장바구니, 결제를 마친 뒤 걷는 소비자, 같은 공간의 다른 장면 |
+| 어두운 사무실에서 모니터를 보는 인물 | 같은 인물의 다른 각도, 같은 사무실의 다른 컷, 업무가 끝난 뒤의 장면, 비슷한 조명과 공간 |
+| 도시에서 혼자 걷는 사람 | 같은 도시·시간대, 유사한 인물/실루엣, 조금 더 정적인 마무리 장면 |
+
+나쁜 예:
+
+- Cover는 사무실인데 INSIGHT는 숲/바다.
+- Cover는 마트인데 INSIGHT는 우주 이미지.
+- Cover는 실사인데 INSIGHT는 3D 렌더.
+- Cover는 차분한 editorial photo인데 INSIGHT는 네온 cyberpunk.
+- 동일한 주제라는 이유만으로 시각 언어가 완전히 다른 사진을 조합하는 경우.
+
+### INSIGHT Image Priority
+
+1. Cover와 같은 시리즈의 다른 컷
+2. 같은 인물 / 같은 장소 / 같은 오브젝트의 다른 컷
+3. 같은 촬영 콘셉트와 무드를 가진 유사 컷
+4. 같은 이미지의 crop / zoom / framing 변경
+5. 위 조건을 만족하는 새 이미지
+
+완전히 다른 이미지를 단순히 “주제와 관련 있다”는 이유로 사용하는 것은 지양한다.
+
+### 동일 Cover 이미지 재사용
+
+표지 이미지를 INSIGHT에 다시 사용하는 것은 허용한다. 다만 그대로 복사하기보다 가능하면 crop, zoom, framing, focal point, overlay 강도를 변경해 첫 장과 마지막 장의 역할 차이를 만든다.
+
+새로운 관련 이미지를 억지로 찾는 것보다 표지 이미지를 다른 방식으로 재구성하는 편이 시각적 연속성이 높다면 이를 우선한다.
+
+### Package Support / Runtime Integration
+
+콘텐츠 package를 준비할 때 `cover.png`와 `insight.png`를 하나의 시각 세트로 확보한다. 두 asset은 .jpg / .jpeg / .png / .webp를 지원한다. carousel.json schema는 그대로 유지하며 새 필드는 요구하지 않는다.
+
+```text
+package/
+├─ carousel.json
+├─ cover.png
+├─ insight.png
+└─ sources.md
+```
+
+Daily Runner는 명시적 insight 파일을 자동 탐색·decode하고 runtime insightImage로 전달한다. 다중 insight 파일이나 decode 오류는 실패 처리하며, URL 다운로드는 하지 않는다. insight가 없으면 resolve된 cover에 alternate framing을 적용하고 경고한다. cover도 없으면 placeholder-fallback과 requiresQualityReview=true를 manifest에 기록한다. 원본 파일은 변경 없이 processed로 이동하고 output에는 원본 insight 이미지를 별도 복사하지 않는다. dry-run도 동일한 탐색·decode·fallback 검사를 수행하되 렌더링·이동은 하지 않는다.
+
+이미지 모드 token: 검정 overlay 65%, object-fit:cover, 명시적 이미지 position 50% 50%, cover fallback position 58% 50% / scale 1.08. category tint나 gradient는 적용하지 않는다. 브랜드·문장·highlight 좌표 및 기존 typography는 유지한다. manifest.insight는 status(provided / cover-fallback / placeholder-fallback), source, requiresQualityReview를 기록한다.
 
 ## Image Type by Topic
 
@@ -497,7 +689,42 @@ not
 - [ ] clipping/overflow 없음
 - [ ] SUMMARY/INSIGHT 역할과 디자인 유지
 
+### INSIGHT
+
+- [ ] INSIGHT에 이미지가 포함됐는가
+- [ ] Cover와 시각적으로 연결되는가
+- [ ] Cover와 최소 3개 이상의 시각적/개념적 요소를 공유하는가
+- [ ] 완전히 다른 사진처럼 느껴지지 않는가
+- [ ] Cover와 동일한 역할이 아니라 마무리 장면의 역할을 하는가
+- [ ] 같은 editorial series처럼 보이는가
+- [ ] SUMMARY를 다시 말한 문장이 아닌가
+- [ ] 핵심 문장이 짧고 강한가
+- [ ] 텍스트 가독성이 충분한가
+- [ ] 과도한 AI-art 느낌이 없는가
+- [ ] 필요하다면 동일 Cover 이미지를 crop/framing 변경으로 재사용했는가
+
+INSIGHT 이미지 항목은 1.3 제작 스펙의 검수 기준이다. Daily Runner는 asset 유효성과 렌더링 overflow/clipping을 검사한다. 같은 editorial series인지, 표현·이미지의 적합성과 실제 가독성이 충분한지는 사람이 확인한다.
+
 ## Changelog
+
+### Revision 1.3 — 2026-09-16
+
+- Normal package now pairs cover + insight images.
+- AI covers use reference-based derivative Insight generation.
+- Real/stock imagery uses same-series pairing.
+- Cover fallback classified as emergency fallback requiring quality review.
+- Placeholder fallback requires quality review and is not recommended for publishing.
+- Added Cover–Insight Pair Production rules; opener/closer roles are distinct.
+
+- INSIGHT page uses imagery in Daily Runner; missing real assets trigger a flagged placeholder exception.
+- Added Cover–Insight visual continuity rule.
+- Added same-series image priority.
+- Added minimum visual consistency criteria (at least three shared elements).
+- Added Cover image reuse/crop fallback.
+- Added INSIGHT image validation checklist.
+- Implemented package insight image support and optional runtime image mode; preserved legacy generate behavior.
+- Retained Carousel Design v6, Cover Image System v1, Daily Workflow v1, and the Specification 1.2 recovery commit/tag.
+- Added image resolution, fallback status, overlay/crop tokens and tests; retained the existing carousel schema and immutable references.
 
 ### Revision 1.2 — 2026-09-16
 

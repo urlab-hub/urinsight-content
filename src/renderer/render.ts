@@ -6,7 +6,7 @@ import sharp from 'sharp';
 import { contentSchema } from '../schema/content.js';
 import { tokens } from '../config/tokens.js';
 import { LocalCoverImageProvider, type CoverImageProvider } from './cover-image.js';
-import { slidesFor, renderHtml } from './template.js';
+import { slidesFor, renderHtml, type InsightImage } from './template.js';
 import { prepareAndValidate } from './validate.js';
 import { contactSheet } from './contact-sheet.js';
 
@@ -14,9 +14,10 @@ export const projectRoot = fileURLToPath(new URL('../../', import.meta.url));
 export function seoulDate(now = new Date()) {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
 }
-export async function generate(contentFile: string, options: { outputRoot?: string; date?: string; provider?: CoverImageProvider } = {}) {
+export async function generate(contentFile: string, options: { outputRoot?: string; date?: string; provider?: CoverImageProvider; insightImage?: InsightImage } = {}) {
   const contentPath = path.resolve(contentFile);
   const content = contentSchema.parse(JSON.parse((await readFile(contentPath, 'utf8')).replace(/^\uFEFF/, '')));
+  if (options.insightImage && options.insightImage.kind !== 'placeholder-fallback' && !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(options.insightImage.dataUrl)) throw new Error('insightImage must be a locally decoded PNG data URL');
   const date = options.date ?? seoulDate();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('Invalid output date');
   const image = await (options.provider ?? new LocalCoverImageProvider()).resolve(content.cover.image, path.dirname(contentPath));
@@ -38,7 +39,7 @@ export async function generate(contentFile: string, options: { outputRoot?: stri
     if (slides.length < 8 || slides.length > 10) throw new Error('Expected 8–10 slides');
     for (const [index, slide] of slides.entries()) {
       const name = `${String(index + 1).padStart(2, '0')}_${slide.kind}.png`;
-      await page.setContent(renderHtml(content, slide, font, image), { waitUntil: 'load' });
+      await page.setContent(renderHtml(content, slide, font, image, options.insightImage), { waitUntil: 'load' });
       let report;
       try { report = await prepareAndValidate(page); } catch (error) { throw new Error(`${name}: ${String(error)}`); }
       if (failures.length) throw new Error(failures.join('\n'));

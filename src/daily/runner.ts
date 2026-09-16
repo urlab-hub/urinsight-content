@@ -4,6 +4,7 @@ import { contentSchema } from '../schema/content.js';
 import { generate, seoulDate } from '../renderer/render.js';
 import { LocalCoverImageProvider } from '../renderer/cover-image.js';
 import { ZodError } from 'zod';
+import type { InsightImage } from '../renderer/template.js';
 
 export interface DailyOptions { root: string; dryRun?: boolean; only?: string; log?: (message: string) => void }
 export interface PackageResult { name: string; status: 'success' | 'failed' | 'ready'; output?: string; error?: string }
@@ -58,6 +59,27 @@ export async function resolveCover(packageDir: string, provided?: string) {
   } else warnings.push('Cover missing: using renderer placeholder');
   return { status, source: file ?? null, image, warnings };
 }
+export async function resolveInsight(packageDir: string, cover: Awaited<ReturnType<typeof resolveCover>>) {
+  const names = (await readdir(packageDir)).filter(n => /^insight\.(jpg|jpeg|png|webp)$/i.test(n));
+  if (names.length > 1) throw new Error('Multiple insight images: keep exactly one insight file');
+  let source: string | null = null;
+  let runtime: InsightImage;
+  const warnings: string[] = [];
+  if (names.length) {
+    source = path.join(packageDir, names[0]);
+    await localPath(source); await regular(source);
+    const dataUrl = await new LocalCoverImageProvider().resolve(source, packageDir);
+    runtime = { kind: 'provided', dataUrl: dataUrl! };
+  } else if (cover.image) {
+    source = cover.source;
+    runtime = { kind: 'cover-fallback', dataUrl: cover.image };
+    warnings.push('Insight missing: using cover image with alternate framing; emergency fallback requires quality review');
+  } else {
+    runtime = { kind: 'placeholder-fallback' };
+    warnings.push('QUALITY REVIEW REQUIRED: Insight missing: using placeholder fallback; supply a real image before publishing');
+  }
+  return { status: runtime.kind, source, runtime, warnings, requiresQualityReview: runtime.kind !== 'provided' };
+}
 export async function runDaily(options: DailyOptions) {
   const root = path.resolve(options.root), date = seoulDate(), log = options.log ?? console.log;
   await localPath(root);
@@ -89,6 +111,9 @@ export async function runDaily(options: DailyOptions) {
         if (name !== content.slug) log(`! Package name differs from slug: ${content.slug}`);
         const cover = await resolveCover(input, content.cover.image);
         cover.warnings.forEach(w => log(`! ${w}`)); log(`✓ Cover: ${cover.source ?? 'placeholder'}`);
+        const insight = await resolveInsight(input, cover);
+        insight.warnings.forEach(w => log(`! ${w}`));
+        log(`✓ Insight: ${insight.source ?? 'placeholder'} (${insight.status})`);
         const target = path.join(output, content.slug), archive = path.join(processed, name);
         if (await exists(target)) throw new Error(`ERROR_EXISTING_OUTPUT: ${target}`);
         if (await exists(archive)) throw new Error(`ERROR_EXISTING_PROCESSED: ${archive}`);
@@ -100,12 +125,12 @@ export async function runDaily(options: DailyOptions) {
         const runtimeFile = path.join(temp, 'carousel.json');
         await writeFile(runtimeFile, JSON.stringify(content));
         log(`✓ Rendering ${content.body.length + 3} pages`);
-        const rendered = await generate(runtimeFile, { outputRoot: path.join(temp, 'render'), date, provider: { resolve: async () => cover.image } });
+        const rendered = await generate(runtimeFile, { outputRoot: path.join(temp, 'render'), date, provider: { resolve: async () => cover.image }, insightImage: insight.runtime });
         log('✓ Contact sheet created');
         for (const source of sources) await copyFile(path.join(input, source), path.join(rendered.directory, source));
         if (sources.length) log('✓ Sources copied');
         const outputs = (await readdir(rendered.directory)).filter(n => n.endsWith('.png')).sort();
-        await writeFile(path.join(rendered.directory, 'manifest.json'), JSON.stringify({ slug: content.slug, category: content.category, pageCount: rendered.pages, processedAt: new Date().toISOString(), inputPackage: name, cover: { status: cover.status, source: cover.source }, outputs, sources: { markdown: sources.includes('sources.md'), json: sources.includes('sources.json') } }, null, 2) + '\n');
+        await writeFile(path.join(rendered.directory, 'manifest.json'), JSON.stringify({ slug: content.slug, category: content.category, pageCount: rendered.pages, processedAt: new Date().toISOString(), inputPackage: name, cover: { status: cover.status, source: cover.source }, insight: { status: insight.status, source: insight.source, requiresQualityReview: insight.requiresQualityReview }, outputs, sources: { markdown: sources.includes('sources.md'), json: sources.includes('sources.json') } }, null, 2) + '\n');
         await mkdir(output, { recursive: true }); await mkdir(processed, { recursive: true });
         // Recheck under the exclusive runner lock immediately before publishing.
         if (await exists(target)) throw new Error(`ERROR_EXISTING_OUTPUT: ${target}`);

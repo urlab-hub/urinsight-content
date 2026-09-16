@@ -33,15 +33,20 @@ pnpm daily
 ## Package 형식
 
 ```text
-inbox/
-  URINSIGHT_20260917_ai-judgment/
-    carousel.json   필수: 기존 v6 schema
-    cover.png       선택: jpg / jpeg / png / webp 중 하나
-    sources.md      선택: 원문 보존
-    sources.json    선택: 원문 보존
+URINSIGHT_YYYYMMDD_<slug>/
+├─ carousel.json
+├─ cover.png
+├─ insight.png
+└─ sources.md
 ```
 
-폴더명과 JSON slug가 다르면 경고가 나오지만 정상 처리한다. 한 폴더에 cover 파일을 여러 개 넣으면 오류다. sources는 파싱·재포맷 없이 byte 그대로 복사한다. 심볼릭 링크·junction을 통한 입력/출력 경로는 지원하지 않는다.
+ChatGPT가 정상적으로 제작한 package에는 cover와 insight 이미지가 함께 들어가는 것이 기본이다. 위 폴더를 inbox 아래에 넣는다. 두 이미지는 jpg/jpeg/png/webp를 지원하며 carousel.json에 새 필드를 넣지 않는다. sources.json도 선택적으로 추가할 수 있다. 정상 제작 시 sources.md를 준비하되 runner는 출처 파일이 없는 입력도 처리한다.
+
+insight 파일이 없으면 Daily Runner가 cover를 다른 framing으로 사용하지만 이는 비상 fallback이다. 실전 게시 전 insight image를 별도로 준비하는 것을 원칙으로 한다. 실제 게시 전 마지막 장을 반드시 검수한다.
+
+AI 이미지 pair는 Cover를 먼저 만든 뒤 그 이미지를 visual reference로 삼아 같은 인물·공간·조명의 다른 순간/앵글로 Insight를 파생 제작한다. 실제 사진·stock·실존 인물은 같은 촬영 시리즈/인터뷰/행사/장소의 다른 컷을 우선한다. Cover는 주제를 여는 장면, Insight는 더 차분하게 닫는 장면이다. 두 장은 최소 3개 이상의 시각적/개념적 요소를 공유한다.
+
+폴더명과 JSON slug가 다르면 경고가 나오지만 정상 처리한다. cover 또는 insight 파일이 각각 여러 개면 오류다. sources는 파싱·재포맷 없이 byte 그대로 복사한다. 심볼릭 링크·junction을 통한 입력/출력 경로는 지원하지 않는다.
 
 특정 package만 처리하려면:
 
@@ -102,3 +107,18 @@ Daily Runner는 기존 `generate()`를 호출하는 로컬 orchestration layer�
 - Instagram 자동 업로드, 예약 게시, 성과 분석
 
 미래 API 자동화용 `feature/content-engine`과 `content-engine-step3`는 별도 보존한다. Daily Runner에 merge하지 않는다.
+
+## Specification 1.3: INSIGHT 이미지
+
+package에 cover와 같은 사진 시리즈처럼 보이는 `insight.png`를 추가한다. `insight.jpg`, `insight.jpeg`, `insight.webp`도 지원한다. carousel.json은 수정할 필요가 없다. Cover와 INSIGHT 이미지가 주제·공간·인물·조명·무드 등 최소 3개 요소로 연결되는지는 사람이 검수한다.
+
+- insight 파일 1개: 별도로 decode하여 마지막 페이지 배경에 사용한다.
+- insight 파일 없음 + 실제 cover 있음: 비상 상태로 경고하고 cover를 1.08배 확대, 58% 50% position으로 재사용한다. manifest.insight.requiresQualityReview=true이며 품질검수가 필요하다.
+- 실제 cover도 없음: 강한 품질검수 경고와 placeholder fallback. manifest.insight.requiresQualityReview=true이므로 게시 전에 실제 이미지를 준비한다.
+- insight 파일 여러 개 또는 깨진 파일: 오류. package는 inbox에 남는다.
+
+이미지는 전체 canvas를 채우고 검정 overlay 65%로 텍스트 가독성을 확보한다. 실제 사진이 전혀 없는 경우에는 기존 dark placeholder를 유지한다. category color로 사진을 tint하지 않는다. 명시적 이미지의 position은 50% 50%다.
+
+manifest.insight.status는 provided / cover-fallback / placeholder-fallback 중 하나다. source는 읽은 원본 경로이며, package 이동 전 경로를 provenance로 기록한다. 원본 insight 파일은 processed에 보존한다. output에는 원본 이미지를 별도 복사하지 않는다.
+
+`pnpm daily -- --dry-run`도 insight 탐색·decode·fallback 상태를 확인한다. 기존 `pnpm generate <carousel.json>`은 optional runtime insightImage가 없으므로 종전 v6 dark INSIGHT 결과를 유지한다. 자동 사진 검색/생성이나 외부 API 호출은 하지 않는다.
