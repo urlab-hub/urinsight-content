@@ -7,11 +7,15 @@ export async function prepareAndValidate(page: Page) {
     await document.fonts.ready;
     if (![...document.fonts].some(face => face.family === 'Pretendard' && face.status === 'loaded') || !document.fonts.check('700 40px Pretendard', '정보 판단')) throw new Error('Pretendard did not load');
     await Promise.all([...document.images].map(img => img.decode()));
+    const slideStyle = getComputedStyle(document.querySelector('.slide')!);
+    const titleGap = Number(slideStyle.getPropertyValue('--title-body-gap'));
+    const keyLine = Number(slideStyle.getPropertyValue('--key-line'));
+    const keyGap = Number(slideStyle.getPropertyValue('--key-gap'));
     // Measure after font loading and before ink/highlight preparation. Legacy is untouched.
     const summary = document.querySelector<HTMLElement>('.anchored.summary');
     if (summary) {
       const bottom = summary.querySelector('h2')!.getBoundingClientRect().bottom;
-      summary.querySelector<HTMLElement>('.summary-copy')!.style.top = `${bottom + frame.titleGap}px`;
+      summary.querySelector<HTMLElement>('.summary-copy')!.style.top = `${bottom + titleGap}px`;
     }
     const context = document.createElement('canvas').getContext('2d')!;
     const errors: string[] = [];
@@ -87,17 +91,17 @@ export async function prepareAndValidate(page: Page) {
       const paragraphs = [...copy.querySelectorAll<HTMLElement>(':scope > p:not(.key):not(.summary-key)')];
       const start = copy.getBoundingClientRect().top;
       const keyRect = key.getBoundingClientRect();
-      const gap = kind === 'BODY' ? frame.bodyGap : frame.summaryGap;
+      const gap = keyGap;
       const currentHeight = Math.max(0, ...paragraphs.map(p => p.getBoundingClientRect().bottom - start));
       const allowedHeight = keyRect.top - gap - start;
       const titleRect = title.getBoundingClientRect();
-      contentFit = { page: Number(slide.dataset.page), kind, contentStartY: start, titleToBodyGap: start - titleRect.bottom, currentHeight, allowedHeight, emphasisBottomY: keyRect.bottom, keyLines: keyRect.height / frame.keyLine };
+      contentFit = { page: Number(slide.dataset.page), kind, contentStartY: start, titleToBodyGap: start - titleRect.bottom, currentHeight, allowedHeight, emphasisBottomY: keyRect.bottom, keyLines: keyRect.height / keyLine };
       if (currentHeight > allowedHeight + .5) errors.push(`${kind}_CONTENT_OVERFLOW page=${slide.dataset.page} region=paragraphs currentHeight=${currentHeight}px allowedHeight=${allowedHeight}px; Shorten/edit paragraphs; do not resize fonts or move anchors.`);
       if (titleRect.bottom > start) errors.push(`${kind}_CONTENT_OVERFLOW page=${slide.dataset.page} region=headline currentHeight=${titleRect.height}px allowedHeight=${start - titleRect.top}px; Shorten headline.`);
-      const headlineLimit = frame.bottom - keyRect.height - gap - frame.titleGap - titleRect.top;
+      const headlineLimit = frame.bottom - keyRect.height - gap - titleGap - titleRect.top;
       if (kind === 'SUMMARY' && titleRect.height > headlineLimit) errors.push(`SUMMARY_CONTENT_OVERFLOW page=${slide.dataset.page} region=headline currentHeight=${titleRect.height}px allowedHeight=${headlineLimit}px; Shorten headline.`);
-      if (Math.abs(start - titleRect.bottom - frame.titleGap) > .5) errors.push(`${kind}_CONTENT_OVERFLOW page=${slide.dataset.page} region=titleToBodyGap actual=${start - titleRect.bottom}px expected=${frame.titleGap}px`);
-      if (keyRect.height > frame.keyLine * frame.maxKeyLines + .5) errors.push(`${kind}_CONTENT_OVERFLOW page=${slide.dataset.page} region=keySentence currentHeight=${keyRect.height}px allowedHeight=${frame.keyLine * frame.maxKeyLines}px; Edit key sentence to 1–2 lines.`);
+      if (Math.abs(start - titleRect.bottom - titleGap) > .5) errors.push(`${kind}_CONTENT_OVERFLOW page=${slide.dataset.page} region=titleToBodyGap actual=${start - titleRect.bottom}px expected=${titleGap}px`);
+      if (keyRect.height > keyLine * frame.maxKeyLines + .5) errors.push(`${kind}_CONTENT_OVERFLOW page=${slide.dataset.page} region=keySentence currentHeight=${keyRect.height}px allowedHeight=${keyLine * frame.maxKeyLines}px; Edit key sentence to 1–2 lines.`);
       if (Math.abs(keyRect.bottom - frame.bottom) > .5) errors.push(`${kind}_CONTENT_OVERFLOW page=${slide.dataset.page} region=keySentence bottom=${keyRect.bottom}px expectedBottom=${frame.bottom}px`);
     }
     if (rect.width !== width || rect.height !== height) errors.push(`Canvas is ${rect.width}x${rect.height}`);
@@ -124,5 +128,5 @@ export async function prepareAndValidate(page: Page) {
     if (document.documentElement.scrollWidth > width || document.documentElement.scrollHeight > height) errors.push('Document overflow');
     if (errors.length) throw new Error(errors.join('\n'));
     return { canvas: { width, height }, checkedElements: elements.length, highlights: document.querySelectorAll('[data-highlight]').length, font: 'Pretendard', passed: true, ...(contentFit ? { contentFit } : {}) };
-  }, { ...tokens.canvas, frame: { bottom: tokens.content.emphasisBottomY, maxKeyLines: tokens.content.maxKeyLines, keyLine: tokens.body.keyLine, bodyGap: tokens.body.keyGap, summaryGap: tokens.summary.keyGap, titleGap: tokens.content.titleToBodyGap } });
+  }, { ...tokens.canvas, frame: { bottom: tokens.content.emphasisBottomY, maxKeyLines: tokens.content.maxKeyLines } });
 }

@@ -22,3 +22,25 @@ export const tokens = {
   slogan: '돈, 사업, 성공을 더 깊게 읽는 시선',
   footer: 'MONEY · BUSINESS · SUCCESS',
 } as const;
+
+/** Daily operating typography; immutable legacy generation retains the v6 measurements above. */
+export const mobileTypography = {
+  titleToBodyGap: 51,
+  cover: { titleSize: 104, titleLine: 126, categoryTop: 804 },
+  body: { titleSize: 48, titleLine: 58, textSize: 38, textLine: 54, paragraphGap: 22, keyGap: 28, keySize: 38, keyLine: 52 },
+  summary: { titleSize: 52, titleLine: 70, keyGap: 28, keySize: 38 },
+  insight: { titleSize: 72, titleLine: 98 },
+} as const;
+
+export const coverOverlay = { opacity: 0.45 } as const;
+
+export function designTokens(operating: boolean) {
+  return operating ? {
+    ...tokens,
+    content: { ...tokens.content, titleToBodyGap: mobileTypography.titleToBodyGap },
+    cover: { ...tokens.cover, ...mobileTypography.cover },
+    body: { ...tokens.body, ...mobileTypography.body },
+    summary: { ...tokens.summary, ...mobileTypography.summary },
+    insight: { ...tokens.insight, ...mobileTypography.insight },
+  } : tokens;
+}

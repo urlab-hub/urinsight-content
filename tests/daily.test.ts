@@ -10,7 +10,8 @@ import sharp from 'sharp';
 import { runDaily, resolveCover, parseDailyArgs, exists } from '../src/daily/runner.js';
 import { projectRoot, seoulDate, generate } from '../src/renderer/render.js';
 
-const sample = JSON.parse(await readFile(path.join(projectRoot, 'content/sample-insight.json'), 'utf8'));
+import { mobileContentFixture } from './fixtures/mobile-content.js';
+const sample = mobileContentFixture(JSON.parse(await readFile(path.join(projectRoot, 'content/sample-insight.json'), 'utf8')));
 const exec = promisify(execFile);
 const quiet = () => {};
 async function isolated(fn: (root: string) => Promise<void>) {
@@ -35,7 +36,7 @@ for (const mode of ['missing', 'invalid-json', 'invalid-schema', 'unsafe-slug', 
     else if (mode === 'invalid-json') await writeFile(path.join(dir, 'carousel.json'), '{');
     else {
       const c = structuredClone(sample);
-      if (mode === 'invalid-schema') c.category = 'invalid';
+      if (mode === 'invalid-schema') Object.assign(c, { category: 'invalid' });
       if (mode === 'unsafe-slug') c.slug = '../outside';
       if (mode === 'bad-highlight') c.body[0].highlight = '없는단어';
       if (mode === 'bad-count') c.body.pop();
@@ -121,7 +122,7 @@ test('render failure cleans temp, keeps inbox, continues to success; sources and
   try {
     const cli = await exec(process.execPath, [path.join(projectRoot, 'node_modules/tsx/dist/cli.mjs'), path.join(projectRoot, 'src/cli/generate.ts'), file], { cwd: root });
     assert.match(cli.stdout, /Generated 8/);
-    for (const name of ['01_cover.png', '08_insight.png']) assert.deepEqual(await readFile(path.join(out, name)), await readFile(path.join(generated, name)));
+    for (const name of ['08_insight.png']) assert.notDeepEqual(await readFile(path.join(out, name)), await readFile(path.join(generated, name)));
     const anchored = await generate(file, { outputRoot: path.join(root, 'anchored'), contentLayout: 'anchored' });
     for (const name of manifest.outputs) assert.deepEqual(await readFile(path.join(out, name)), await readFile(path.join(anchored.directory, name)));
     assert.notDeepEqual(await readFile(path.join(out, '02_body.png')), await readFile(path.join(generated, '02_body.png')));

@@ -1,10 +1,10 @@
 # URINSIGHT Carousel v6 — Baseline Specification
 
 - URINSIGHT Carousel Design: v6
-- Specification Revision: 1.6
+- Specification Revision: 1.8
 - Cover Image System: v1
 - Daily Workflow: v1
-- Last Updated: 2026-09-17
+- Last Updated: 2026-09-18
 
 Carousel Design은 v6로 유지하며 v7로 변경하지 않는다. Specification Revision은 디자인 버전과 별도로 관리한다. Revision 1.2에서 확정한 편집 원칙과 highlight 규칙은 유지하고, Revision 1.3에서는 이미지가 포함된 INSIGHT와 Cover–Insight 시각적 연속성을 제작 규칙으로 정의한다.
 
@@ -37,6 +37,32 @@ Revision 1.4는 BODY/SUMMARY의 고정 vertical frame을 추가한다. Daily Run
 - Category label format: #사업 / #돈 / #인사이트
 - Category label: no background, category-color text only
 - Classification: assign by the topic’s most directly connected core subject
+
+## Mobile Readability — Revision 1.8
+
+Carousel Design v6의 고정 프레임을 유지하고 Daily 운영 모드의 타이포를 확대한다. 새 token은 `mobileTypography`와 `coverOverlay`에 모은다. `designTokens(true)`는 Daily가 기존에 사용하는 anchored runtime mode에만 적용한다. 옵션 없는 `pnpm generate`는 기존 v6 이미지와 같은 결과를 유지한다. FLOW, inbox 처리, package 구조, carousel schema는 변경하지 않는다.
+
+| 요소 | 이전 px | 운영 px |
+|---|---:|---:|
+| COVER 제목 font / line-height | 89 / 116 | 104 / 126 |
+| INSIGHT headline font / line-height | 63.5 / 88 | 72 / 98 |
+| COVER category top | 780 | 804 |
+| BODY 소제목 font / line-height | 42 / 52 | 48 / 58 |
+| BODY / SUMMARY 본문 font / line-height | 30.5 / 47 | 38 / 54 |
+| SUMMARY headline font / line-height | 46.4 / 64 | 52 / 70 |
+| BODY 강조문장 font / line-height | 30.7 / 43 | 38 / 52 |
+| SUMMARY 강조문장 font / line-height | 30.8 / 43 | 38 / 52 |
+| 문단 간격 | 26 | 22 |
+| 제목→본문 간격 | 57 | 51 |
+| BODY / SUMMARY 강조문장 앞 최소 간격 | 31 / 37 | 28 / 28 |
+
+유지: 좌우 110px, BODY brand Y=303 / title Y=395 / body Y=504, SUMMARY label Y=255 / headline Y=394, 공통 강조문장 line box bottom Y=1103. COVER brand Y=306 / title Y=393 / footer Y=919와 제목 3줄 규칙을 유지한다. INSIGHT label Y=255 / headline Y=344 / footer Y=899와 이미지 overlay/crop은 유지하고, Daily headline만 72px / line-height 98px로 확대한다. highlight background-only padding max 5/7px도 유지한다.
+
+실제 cover image가 있는 Daily COVER에는 전체 1080×1350 프레임에 검정 overlay 45%를 적용한다. 국소 scrim, feather mask, 텍스트 shadow 방식은 제거한다. COVER 제목 104px / line-height 126px와 anchor는 유지한다. 원본 이미지는 수정하지 않는다. 이미지 없는 placeholder와 legacy generate에는 새 overlay를 적용하지 않는다.
+
+INSIGHT는 기존 전체 검정 overlay 65%, explicit position 50% 50%, fallback position 58% 50% / scale 1.08을 유지한다. COVER overlay는 INSIGHT보다 약하게 적용한다. 서로 다른 사진의 원본 노출 차이까지 보장하지는 않으므로 COVER가 더 밝고 자연스럽게 보이는지 사람이 확인한다.
+
+확대된 글자에 맞지 않는 기존 원고는 자동 축소·자동 요약·임의 재줄바꿈하지 않는다. COVER는 세 줄을 더 짧게 편집하고 BODY/SUMMARY는 설명을 압축한다. 과거 원고가 legacy에서는 통과해도 새 Daily 모드에서는 overflow로 거절될 수 있다. 과거 성공 output이나 원본 package를 바꾸지 않는다.
 
 ## 1P Cover
 - Brand text: URINSIGHT
@@ -94,7 +120,7 @@ SUMMARY는 BODY를 다시 나열하거나 짧게 반복하는 페이지가 아�
 
 답해야 할 질문은 “앞의 여러 사실과 논거를 묶으면 어떤 구조가 보이는가?”다. BODY보다 한 단계 높은 해석을 제시한다. BODY에서 이미 사용한 핵심 문장을 그대로 다시 사용하지 않는다.
 
-## BODY / SUMMARY Vertical Anchor System — Revision 1.5
+## BODY / SUMMARY Vertical Anchor System — Revision 1.7
 
 “콘텐츠가 디자인을 밀어내는 것이 아니라, 콘텐츠가 고정된 editorial frame 안에 맞춰진다.”
 
@@ -107,20 +133,20 @@ SUMMARY는 BODY를 다시 나열하거나 짧게 반복하는 페이지가 아�
 | BODY 본문 시작 | body.textTop | Y 504 |
 | SUMMARY label | insight.labelTop / layout.left 공유 | Y 255 / X 110 |
 | SUMMARY headline 시작 | summary.titleTop | Y 394 |
-| SUMMARY 설명 시작 | headline 실제 하단 + content.titleToBodyGap | 1/2/3줄: Y 515 / 579 / 643 |
+| SUMMARY 설명 시작 | headline 실제 하단 + content.titleToBodyGap | 1/2/3줄: Y 515 / 585 / 655 |
 | BODY/SUMMARY 마지막 강조문장 하단 | content.emphasisBottomY | Y 1103 |
 
 공통 하단 1103은 승인된 v6 sample SUMMARY의 기존 위치에서 산정했다: 본문 시작 689 + 문단 영역 334 + 강조문장 전 간격 37 + 강조문장 line-height 43 = 1103. reference 원본을 수정하지 않는다. BODY의 top anchors는 기존 좌표를 그대로 사용한다. SUMMARY label은 마지막 INSIGHT의 URINSIGHT와 같은 좌측/상단 기준선을 사용한다.
 
-### Shared Title-to-Body Gap — Revision 1.5
+### Shared Title-to-Body Gap — Revision 1.7
 
 SUMMARY headline은 1~2줄을 권장하며 최대 3줄까지 허용한다. 3줄인 경우 본문 설명을 더 압축하여 고정 bottom anchor를 침범하지 않도록 한다. font size나 anchor 위치는 변경하지 않는다.
 
 SUMMARY의 본문 시작점은 절대 Y좌표가 아니라 headline의 실제 마지막 줄 하단 + BODY와 동일한 title-to-body gap으로 계산한다. BODY와 SUMMARY는 동일한 소제목→본문 시각 간격을 사용한다. 마지막 강조문장은 기존 공통 bottom anchor Y=1103을 유지한다.
 
-`content.titleToBodyGap = 57px`: 기존 BODY 소제목 line box 하단 395 + 52 = 447에서 본문 Y=504까지의 실제 간격이다. BODY 레이아웃은 바꾸지 않는다. 여기서 하단은 기존 vertical frame과 동일한 line box 기준이며 glyph 잉크 경계가 아니다.
+Daily의 `content.titleToBodyGap = 51px`: 확대된 BODY 소제목 line box 하단 395 + 58 = 453에서 본문 Y=504까지의 간격이다. BODY 상단과 본문 시작 좌표를 유지한다. 이전 57px는 legacy token에 보존한다. 여기서 하단은 기존 vertical frame과 동일한 line box 기준이며 glyph 잉크 경계가 아니다.
 
-SUMMARY headline 첫 줄 Y=394, line-height 64px를 유지한다. Pretendard 로드 후 실제 DOM 높이를 측정하므로 1/2/3줄 및 CSS 자동 wrapping에도 동일한 간격을 적용한다. 계산식은 `summaryBodyStartY = summaryHeadlineActualBottomY + content.titleToBodyGap`이다. label Y=255/X=110, headline font, highlight, bottom anchor는 유지한다. 절대 `summary.textTop=689`는 legacy generate 호환용으로만 남으며 Daily의 anchored mode에서는 사용하지 않는다.
+SUMMARY headline 첫 줄 Y=394를 유지하며 운영 모드 line-height는 70px다. Pretendard 로드 후 실제 DOM 높이를 측정하므로 1/2/3줄 및 CSS 자동 wrapping에도 동일한 간격을 적용한다. 계산식은 `summaryBodyStartY = summaryHeadlineActualBottomY + content.titleToBodyGap`이다. label Y=255/X=110, Pretendard hierarchy, highlight, bottom anchor는 유지한다. 절대 `summary.textTop=689`는 legacy generate 호환용으로만 남으며 Daily의 anchored mode에서는 사용하지 않는다.
 
 headline이 길어지면 본문 설명 영역이 줄어든다. 설명 압축 → 중복 문장 제거 → 3문단을 2문단으로 조정하고, 그래도 맞지 않으면 SUMMARY_CONTENT_OVERFLOW로 실패한다. 폰트 축소, bottom anchor 이동, headline 시작점을 위로 당기는 처리는 하지 않는다.
 
@@ -130,12 +156,12 @@ headline이 길어지면 본문 설명 영역이 줄어든다. 설명 압축 →
 
 | 페이지 | 강조문장 1줄 / 2줄 | 본문 최대 높이 1줄 / 2줄 | 본문 끝 한계 Y 1줄 / 2줄 |
 |---|---|---|---|
-| BODY | 43 / 86px | 525 / 482px | 1029 / 986 |
-| SUMMARY headline 1줄 | 43 / 86px | 508 / 465px | 1023 / 980 |
-| SUMMARY headline 2줄 | 43 / 86px | 444 / 401px | 1023 / 980 |
-| SUMMARY headline 3줄 | 43 / 86px | 380 / 337px | 1023 / 980 |
+| BODY | 52 / 104px | 519 / 467px | 1023 / 971 |
+| SUMMARY headline 1줄 | 52 / 104px | 508 / 456px | 1023 / 971 |
+| SUMMARY headline 2줄 | 52 / 104px | 438 / 386px | 1023 / 971 |
+| SUMMARY headline 3줄 | 52 / 104px | 368 / 316px | 1023 / 971 |
 
-강조문장 앞 최소 간격은 기존 body.keyGap 31px / summary.keyGap 37px를 유지한다. 문단 사이 간격은 기존 26px다. 문단 영역이 짧아도 headline 시작점과 마지막 강조문장을 이동하지 않는다. SUMMARY 본문 시작점만 headline 실제 높이를 따른다. 남는 공간은 본문 아래 여백으로 남긴다. headline의 하단이 본문 시작을 침범해서도 안 된다.
+운영 모드의 강조문장 앞 최소 간격은 BODY/SUMMARY 공통 28px, 문단 사이 간격은 22px다. 문단 영역이 짧아도 headline 시작점과 마지막 강조문장을 이동하지 않는다. SUMMARY 본문 시작점만 headline 실제 높이를 따른다. 남는 공간은 본문 아래 여백으로 남긴다. headline의 하단이 본문 시작을 침범해서도 안 된다.
 
 실제 Pretendard 로드 후 DOM에서 높이를 측정한다. 본문 영역 초과, headline/본문 충돌, 강조문장 2줄 초과 또는 bottom anchor 이탈은 `BODY_CONTENT_OVERFLOW` / `SUMMARY_CONTENT_OVERFLOW`로 실패한다. 오류에는 page, region, currentHeight, allowedHeight 등 측정값과 편집할 영역을 표시한다. 가로 overflow와 subtitle single-line은 기존 validator도 함께 검사한다. 실패한 렌더는 final output으로 확정하거나 processed로 이동하지 않는다. validation.json의 contentFit에 페이지별 측정값을 기록한다.
 
@@ -145,7 +171,7 @@ headline이 길어지면 본문 설명 영역이 줄어든다. 설명 압축 →
 - SUMMARY: label fixed, headline fixed start, 설명 2~3문단, 마지막 강조문장 1~2줄, bottom anchor fixed.
 - SUMMARY가 길어져 하단을 밀어내면 요약을 더 압축한다.
 - 콘텐츠가 넘치면 중복 제거 → 문장 간결화 → 필요 시 3문단을 2문단으로 압축한다.
-- 문단 간격의 소폭 축소는 편집 검토 후 공통 token 차원에서만 검토한다. 현재 renderer는 26px를 유지하며 페이지마다 자동 축소하지 않는다.
+- 문단 간격의 소폭 축소는 편집 검토 후 공통 token 차원에서만 검토한다. 현재 운영 renderer는 공통 22px를 사용하며 페이지마다 자동 축소하지 않는다.
 - 그래도 맞지 않으면 validation error / editorial review 대상이다. 실제 정보량이 많을 때만 BODY를 추가하여 총 9~10페이지로 확장한다.
 - 본문·소제목 font size 자동 축소, line-height 과도한 축소, 소제목 위로 당기기, 강조문장 아래로 밀기, 콘텐츠별 anchor 변경은 금지한다.
 - Cover/INSIGHT layout, 이미지 pairing, category colors, typography hierarchy, 좌우 margin, highlight left max 5px / right max 7px와 legacy mode는 변경하지 않는다.
@@ -528,7 +554,7 @@ package/
 
 Daily Runner는 명시적 insight 파일을 자동 탐색·decode하고 runtime insightImage로 전달한다. 다중 insight 파일이나 decode 오류는 실패 처리하며, URL 다운로드는 하지 않는다. insight가 없으면 resolve된 cover에 alternate framing을 적용하고 경고한다. cover도 없으면 placeholder-fallback과 requiresQualityReview=true를 manifest에 기록한다. 원본 파일은 변경 없이 processed로 이동하고 output에는 원본 insight 이미지를 별도 복사하지 않는다. dry-run도 동일한 탐색·decode·fallback 검사를 수행하되 렌더링·이동은 하지 않는다.
 
-이미지 모드 token: 검정 overlay 65%, object-fit:cover, 명시적 이미지 position 50% 50%, cover fallback position 58% 50% / scale 1.08. category tint나 gradient는 적용하지 않는다. 브랜드·문장·highlight 좌표 및 기존 typography는 유지한다. manifest.insight는 status(provided / cover-fallback / placeholder-fallback), source, requiresQualityReview를 기록한다.
+이미지 모드 token: 검정 overlay 65%, object-fit:cover, 명시적 이미지 position 50% 50%, cover fallback position 58% 50% / scale 1.08. category tint나 gradient는 적용하지 않는다. 브랜드·headline 시작·footer 좌표와 highlight 규칙은 유지한다. Daily headline은 Revision 1.8의 72px / 98px를 적용하고 legacy typography는 보존한다. manifest.insight는 status(provided / cover-fallback / placeholder-fallback), source, requiresQualityReview를 기록한다.
 
 ## Image Type by Topic
 
@@ -651,29 +677,21 @@ Avoid:
 To unify images from different sources:
 - slightly reduce saturation when needed
 - maintain moderate contrast
-- apply localized text-area readability treatment if needed; follow the rule below rather than darkening the entire image
+- apply the Daily COVER full-frame black overlay at 45%, weaker than INSIGHT at 65%
 - add light film grain / texture if appropriate
 - reduce overly crisp commercial-stock appearance
 - preserve natural skin tones for real people
 - do not force the category color into the entire image
 
-### Localized COVER Readability Treatment — Revision 1.6
+### Full-frame COVER Dark Overlay — Revision 1.8
 
-COVER는 이미지 전체를 어둡게 누르기보다 텍스트가 올라가는 영역만 선택적으로 보정한다. 기본 원칙은 이미지의 자연스러운 명암과 editorial 무드 보존이다.
-
-제목·브랜드·#카테고리의 가독성이 부족한 경우, 해당 텍스트 블록 주변에 한해 다음 중 하나 또는 복합 방식으로 보정할 수 있다.
-
-- 국소 dark scrim
-- 국소 gradient overlay
-- 국소 shadow / contrast reinforcement
-
-보정은 텍스트 영역 중심으로만 적용한다. 배경 이미지 전체를 동일 농도로 어둡게 처리하는 full-frame dark overlay는 기본값으로 사용하지 않는다. 보정 영역의 경계나 효과가 과도하게 드러나지 않도록 하며 이미지의 자연스러운 명암을 유지한다.
+Daily COVER는 전체 프레임에 검정 dark overlay 45%를 기본 적용한다. Revision 1.6/1.7의 localized text-area readability treatment는 폐기한다. 브랜드·제목·카테고리 가독성을 확보하면서 이미지의 자연스러운 명암과 editorial 무드를 보존한다. category color로 사진을 tint하지 않는다.
 
 ### COVER / INSIGHT Brightness Relationship
 
-INSIGHT 마지막 페이지는 기존처럼 더 깊고 어두운 톤을 유지할 수 있다. COVER는 INSIGHT보다 상대적으로 조금 더 밝고 자연스럽게 유지한다. 단, 제목 가독성이 우선이며 필요 시 COVER 텍스트 영역만 선택적으로 보정한다.
+COVER는 INSIGHT보다 밝고 자연스러운 진입 장면, INSIGHT는 더 깊고 어두운 마무리 장면으로 제작한다. COVER 45% < INSIGHT 65%의 overlay 강도를 유지한다. 서로 다른 원본 이미지의 노출도 고려하여 최종 밝기와 글자 가독성을 검수한다.
 
-이 규칙은 디자인·가독성 기준이다. 작업 순서, package 구조, FLOW 문서 및 기존 INSIGHT 이미지 처리 방식은 변경하지 않는다. 이번 revision에서 renderer의 국소 보정 기능을 구현하거나 적용했다는 의미는 아니다.
+작업 순서, package 구조, FLOW 문서, schema는 변경하지 않는다. 기본 legacy generate는 기존 결과를 유지한다.
 
 ## Category Color Usage on Cover
 
@@ -762,7 +780,7 @@ not
 - [ ] category color가 사진 전체를 지배하지 않는가
 - [ ] 제목 3줄이 첫눈에 읽히는가
 - [ ] highlight가 배경과 겹쳐 묻히지 않는가
-- [ ] 텍스트 뒤 보정 영역이 과도하게 티 나지 않는가
+- [ ] 전체 overlay가 과도한 보정처럼 보이지 않는가
 - [ ] 이미지 전체가 불필요하게 탁해지거나 무드가 죽지 않았는가
 - [ ] COVER가 INSIGHT보다 과하게 어두워지지 않았는가
 
@@ -791,6 +809,23 @@ not
 INSIGHT 이미지 항목은 1.3 제작 스펙의 검수 기준이다. Daily Runner는 asset 유효성과 렌더링 overflow/clipping을 검사한다. 같은 editorial series인지, 표현·이미지의 적합성과 실제 가독성이 충분한지는 사람이 확인한다.
 
 ## Changelog
+
+### Revision 1.8 — 2026-09-18
+
+- Replaced localized COVER treatment with a full-frame 45% black overlay.
+- Kept COVER lighter than the 65% INSIGHT overlay.
+- Enlarged Daily INSIGHT headline from 63.5/88px to 72/98px.
+- Preserved all top/footer anchors and BODY/SUMMARY emphasis bottom Y=1103.
+- Retained legacy generate, image pairing, package schema and Daily workflow.
+- Supersedes the localized treatment recorded in revisions 1.6 and 1.7.
+
+### Revision 1.7 — 2026-09-17
+
+- Enlarged Daily COVER/BODY/SUMMARY typography for mobile readability.
+- Kept top anchors and shared emphasis bottom Y=1103; refined shared gaps.
+- Implemented text-range-based localized cover scrim and subtle text shadow.
+- Preserved INSIGHT, legacy generate, schema and Daily workflow.
+- Added mobile, localized-background and overflow regression checks.
 
 ### Revision 1.6 — 2026-09-17
 

@@ -11,7 +11,8 @@ import { renderHtml } from '../src/renderer/template.js';
 import { prepareAndValidate } from '../src/renderer/validate.js';
 import { contentSchema } from '../src/schema/content.js';
 
-const sample = JSON.parse(await readFile(path.join(projectRoot, 'content/sample-insight.json'), 'utf8'));
+import { mobileContentFixture } from './fixtures/mobile-content.js';
+const sample = mobileContentFixture(JSON.parse(await readFile(path.join(projectRoot, 'content/sample-insight.json'), 'utf8')));
 async function fixture(run: (root: string, dir: string) => Promise<void>) {
   const root = await mkdtemp(path.join(tmpdir(), 'urinsight-image-'));
   const dir = path.join(root, 'inbox', sample.slug); await mkdir(dir, { recursive: true });

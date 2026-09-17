@@ -8,7 +8,8 @@ import { projectRoot } from '../src/renderer/render.js';
 import { renderHtml, type Slide } from '../src/renderer/template.js';
 import { prepareAndValidate } from '../src/renderer/validate.js';
 import { contentSchema, type CarouselContent } from '../src/schema/content.js';
-import { tokens } from '../src/config/tokens.js';
+import { designTokens } from '../src/config/tokens.js';
+const tokens = designTokens(true);
 import { verticalFixture, summaryHeadlineFixture } from './fixtures/vertical-frame.js';
 
 const sample = contentSchema.parse(JSON.parse(await readFile(path.join(projectRoot, 'content/sample-insight.json'), 'utf8')));
@@ -48,19 +49,19 @@ test('all BODY pages share top anchors and BODY/SUMMARY share bottom; v6 summary
     const brand = (await page.locator('.body-brand').boundingBox())!;
     assert.equal(brand.y, tokens.body.brandTop);
     assert.equal(fit.contentStartY, 504);
-    assert.equal(fit.titleToBodyGap, 57);
+    assert.equal(fit.titleToBodyGap, 51);
     assert.equal(brand.x + brand.width, tokens.canvas.width - tokens.layout.right);
   }
 });
 
-for (const count of [1, 2, 3] as const) test(`SUMMARY ${count}-line headline: shared 57px gap and unchanged anchors`, async () => {
+for (const count of [1, 2, 3] as const) test(`SUMMARY ${count}-line headline: shared operating gap and unchanged anchors`, async () => {
   const c = summaryHeadlineFixture(sample, count);
   const fit = (await load(c, { kind: 'summary' })).contentFit!;
   const title = (await page.locator('.summary-title').boundingBox())!;
-  assert.equal(title.y, 394); assert.equal(title.height, count * 64);
-  assert.equal(fit.contentStartY, [515, 579, 643][count - 1]);
+  assert.equal(title.y, 394); assert.equal(title.height, count * 70);
+  assert.equal(fit.contentStartY, [515, 585, 655][count - 1]);
   assert.equal(fit.contentStartY - title.y - title.height, tokens.content.titleToBodyGap);
-  assert.equal(fit.titleToBodyGap, 57);
+  assert.equal(fit.titleToBodyGap, 51);
   assert.equal(fit.emphasisBottomY, 1103);
   const label = (await page.locator('.summary-label').boundingBox())!;
   assert.equal(label.y, 255); assert.equal(label.x, 110);
@@ -71,7 +72,7 @@ test('SUMMARY measures CSS-wrapped headline after font loading without authored 
   const fit = (await load(c, { kind: 'summary' })).contentFit!;
   const title = (await page.locator('.summary-title').boundingBox())!;
   assert.ok(title.height > 64);
-  assert.equal(fit.contentStartY, title.y + title.height + 57);
+  assert.equal(fit.contentStartY, title.y + title.height + 51);
   assert.equal(fit.emphasisBottomY, 1103);
 });
 
@@ -79,10 +80,10 @@ test('SUMMARY taller headline reduces available area and rejects previously fitt
   const c = summaryHeadlineFixture(sample, 1);
   c.summary.paragraphLines = [Array(4).fill('필요한 조건을 먼저 정한다.'), Array(3).fill('남은 선택지를 자세히 살펴본다.')];
   c.summary.paragraphs = c.summary.paragraphLines.map(lines => lines.join(' '));
-  assert.equal((await load(c, { kind: 'summary' })).contentFit!.currentHeight, 355);
+  assert.equal((await load(c, { kind: 'summary' })).contentFit!.currentHeight, 400);
   const three = summaryHeadlineFixture(sample, 3).summary;
   c.summary.headline = three.headline; c.summary.headlineLines = three.headlineLines;
-  await assert.rejects(load(c, { kind: 'summary' }), /SUMMARY_CONTENT_OVERFLOW page=7 region=paragraphs currentHeight=355px allowedHeight=337px/);
+  await assert.rejects(load(c, { kind: 'summary' }), /SUMMARY_CONTENT_OVERFLOW page=7 region=paragraphs currentHeight=400px allowedHeight=316px/);
 });
 
 for (const kind of ['body', 'summary'] as const) for (const region of ['paragraphs', 'keySentence', 'headline'] as const) {
@@ -102,10 +103,10 @@ for (const kind of ['body', 'summary'] as const) for (const region of ['paragrap
   });
 }
 
-test('legacy default equals explicit legacy on all approved pages; protected COVER/INSIGHT ignore frame mode', async () => {
+test('legacy default equals explicit legacy on all approved pages; Daily INSIGHT typography is an explicit override', async () => {
   const slides: Slide[] = [{ kind: 'cover' }, ...sample.body.map((_, index) => ({ kind: 'body' as const, index })), { kind: 'summary' }, { kind: 'insight' }];
   for (const slide of slides) {
     assert.equal(renderHtml(sample, slide, font), renderHtml(sample, slide, font, undefined, undefined, 'legacy'));
-    if (slide.kind === 'cover' || slide.kind === 'insight') assert.equal(renderHtml(sample, slide, font), renderHtml(sample, slide, font, undefined, undefined, 'anchored'));
+    if (slide.kind === 'insight') assert.notEqual(renderHtml(sample, slide, font), renderHtml(sample, slide, font, undefined, undefined, 'anchored'));
   }
 });
