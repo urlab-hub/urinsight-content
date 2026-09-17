@@ -1,7 +1,7 @@
 # URINSIGHT Carousel v6 — Baseline Specification
 
 - URINSIGHT Carousel Design: v6
-- Specification Revision: 1.8
+- Specification Revision: 1.9
 - Cover Image System: v1
 - Daily Workflow: v1
 - Last Updated: 2026-09-18
@@ -119,6 +119,33 @@ INSIGHT는 기존 전체 검정 overlay 65%, explicit position 50% 50%, fallback
 SUMMARY는 BODY를 다시 나열하거나 짧게 반복하는 페이지가 아니다.
 
 답해야 할 질문은 “앞의 여러 사실과 논거를 묶으면 어떤 구조가 보이는가?”다. BODY보다 한 단계 높은 해석을 제시한다. BODY에서 이미 사용한 핵심 문장을 그대로 다시 사용하지 않는다.
+
+## BODY Editorial Density
+
+BODY는 모바일 가독성을 위해 충분한 여백을 유지하되, 본문이 지나치게 짧아 화면 중앙이 비어 보이지 않도록 적정 정보 밀도를 확보한다.
+
+권장 기준:
+
+- 소제목: 1줄
+- 설명: 2~3개 semantic paragraph
+- 설명 영역의 체감 분량: 대략 5~7줄
+- 마지막 강조문장: 1~2줄
+- 마지막 강조문장 line box 하단: Y=1103 유지
+
+5~7줄은 편집상 권장 분량이며 강제 줄 수나 새로운 validation 조건이 아니다.
+
+본문이 지나치게 짧으면 다음 우선순위로 1문장 정도 보강한다.
+
+1. 근거 또는 데이터
+2. 맥락 또는 원인
+3. 실제 사례
+4. 독자가 이해해야 할 해석
+
+빈 공간을 채우기 위한 반복·수사·의미 없는 문장은 추가하지 않는다. BODY 페이지별 역할과 논리 전진 원칙은 그대로 유지한다. 같은 주장을 표현만 바꿔 늘리는 것은 금지한다.
+
+본문이 길어지면 중복 제거 → 문장 간결화 → 3문단을 2문단으로 압축하는 순서로 편집한다. 폰트 축소, anchor 이동, 강조문장 위치 이동으로 해결하지 않는다.
+
+이 기준은 BODY의 콘텐츠 편집에만 적용한다. SUMMARY는 이번 변경 대상이 아니며 기존 규칙을 유지한다.
 
 ## BODY / SUMMARY Vertical Anchor System — Revision 1.7
 
@@ -809,6 +836,12 @@ not
 INSIGHT 이미지 항목은 1.3 제작 스펙의 검수 기준이다. Daily Runner는 asset 유효성과 렌더링 overflow/clipping을 검사한다. 같은 editorial series인지, 표현·이미지의 적합성과 실제 가독성이 충분한지는 사람이 확인한다.
 
 ## Changelog
+
+### Revision 1.9 — 2026-09-18
+
+- Added recommended BODY editorial density for mobile readability.
+- Short BODY pages should be enriched with evidence, context, or interpretation rather than moving anchors or adding filler.
+- Editorial guidance only; SUMMARY, design, renderer, validation, FLOW and schema remain unchanged.
 
 ### Revision 1.8 — 2026-09-18
 
