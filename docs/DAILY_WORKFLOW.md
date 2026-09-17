@@ -130,3 +130,7 @@ manifest.insight.status는 provided / cover-fallback / placeholder-fallback 중 
 `BODY_CONTENT_OVERFLOW` 또는 `SUMMARY_CONTENT_OVERFLOW`가 나오면 오류의 page/region/currentHeight/allowedHeight를 확인하고 해당 원고를 줄인다. 중복 제거, 문장 간결화, 3문단을 2문단으로 압축하는 순서로 편집한다. 폰트를 줄이거나 마지막 문장을 아래로 밀지 않는다. 오류 package는 inbox에 남는다.
 
 기존 `pnpm generate <carousel.json>`은 v6 legacy 배치를 유지한다. Daily Runner만 runtime `contentLayout: 'anchored'`를 전달하며 원본 JSON은 바꾸지 않는다. dry-run은 파일/schema/이미지/경로 검사이고 실제 높이 검증은 생성 시 수행한다. Cover와 INSIGHT의 1.3 이미지 규칙은 그대로다.
+
+## Specification 1.5: SUMMARY 제목 다음에 설명 배치
+
+SUMMARY 설명은 headline 실제 마지막 줄 하단에서 57px 아래에 시작한다. BODY 소제목과 본문 사이의 기존 간격과 같다. headline 1/2/3줄의 본문 시작은 각각 Y=515/579/643이며, 마지막 강조문장 하단은 Y=1103을 유지한다. 제목이 길어져 설명이 넘치면 원고를 압축한다. 폰트 크기나 고정 anchor를 바꾸지 않는다. 기존 generate의 legacy 배치는 그대로다.

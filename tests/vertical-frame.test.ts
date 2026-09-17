@@ -9,7 +9,7 @@ import { renderHtml, type Slide } from '../src/renderer/template.js';
 import { prepareAndValidate } from '../src/renderer/validate.js';
 import { contentSchema, type CarouselContent } from '../src/schema/content.js';
 import { tokens } from '../src/config/tokens.js';
-import { verticalFixture } from './fixtures/vertical-frame.js';
+import { verticalFixture, summaryHeadlineFixture } from './fixtures/vertical-frame.js';
 
 const sample = contentSchema.parse(JSON.parse(await readFile(path.join(projectRoot, 'content/sample-insight.json'), 'utf8')));
 const font = (await readFile(path.join(projectRoot, 'node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2'))).toString('base64');
@@ -29,7 +29,7 @@ for (const kind of ['body', 'summary'] as const) for (const length of ['short', 
     assert.equal(fit.emphasisBottomY, tokens.content.emphasisBottomY);
     assert.equal(fit.keyLines, lines);
     assert.ok(fit.currentHeight <= fit.allowedHeight);
-    assert.equal(fit.allowedHeight, tokens.content.emphasisBottomY - lines * tokens.body.keyLine - (kind === 'body' ? tokens.body.keyGap + tokens.body.textTop : tokens.summary.keyGap + tokens.summary.textTop));
+    assert.equal(fit.allowedHeight, tokens.content.emphasisBottomY - lines * tokens.body.keyLine - (kind === 'body' ? tokens.body.keyGap : tokens.summary.keyGap) - fit.contentStartY);
     assert.equal((await page.locator(`.${kind}-title`).boundingBox())!.y, tokens[kind].titleTop);
     const label = (await page.locator(kind === 'body' ? '.body-brand' : '.summary-label').boundingBox())!;
     assert.equal(label.y, kind === 'body' ? tokens.body.brandTop : tokens.insight.labelTop);
@@ -47,8 +47,42 @@ test('all BODY pages share top anchors and BODY/SUMMARY share bottom; v6 summary
     assert.equal((await page.locator('.body-title').boundingBox())!.y, tokens.body.titleTop);
     const brand = (await page.locator('.body-brand').boundingBox())!;
     assert.equal(brand.y, tokens.body.brandTop);
+    assert.equal(fit.contentStartY, 504);
+    assert.equal(fit.titleToBodyGap, 57);
     assert.equal(brand.x + brand.width, tokens.canvas.width - tokens.layout.right);
   }
+});
+
+for (const count of [1, 2, 3] as const) test(`SUMMARY ${count}-line headline: shared 57px gap and unchanged anchors`, async () => {
+  const c = summaryHeadlineFixture(sample, count);
+  const fit = (await load(c, { kind: 'summary' })).contentFit!;
+  const title = (await page.locator('.summary-title').boundingBox())!;
+  assert.equal(title.y, 394); assert.equal(title.height, count * 64);
+  assert.equal(fit.contentStartY, [515, 579, 643][count - 1]);
+  assert.equal(fit.contentStartY - title.y - title.height, tokens.content.titleToBodyGap);
+  assert.equal(fit.titleToBodyGap, 57);
+  assert.equal(fit.emphasisBottomY, 1103);
+  const label = (await page.locator('.summary-label').boundingBox())!;
+  assert.equal(label.y, 255); assert.equal(label.x, 110);
+});
+
+test('SUMMARY measures CSS-wrapped headline after font loading without authored lines', async () => {
+  const c = summaryHeadlineFixture(sample, 3); delete c.summary.headlineLines;
+  const fit = (await load(c, { kind: 'summary' })).contentFit!;
+  const title = (await page.locator('.summary-title').boundingBox())!;
+  assert.ok(title.height > 64);
+  assert.equal(fit.contentStartY, title.y + title.height + 57);
+  assert.equal(fit.emphasisBottomY, 1103);
+});
+
+test('SUMMARY taller headline reduces available area and rejects previously fitting explanation', async () => {
+  const c = summaryHeadlineFixture(sample, 1);
+  c.summary.paragraphLines = [Array(4).fill('필요한 조건을 먼저 정한다.'), Array(3).fill('남은 선택지를 자세히 살펴본다.')];
+  c.summary.paragraphs = c.summary.paragraphLines.map(lines => lines.join(' '));
+  assert.equal((await load(c, { kind: 'summary' })).contentFit!.currentHeight, 355);
+  const three = summaryHeadlineFixture(sample, 3).summary;
+  c.summary.headline = three.headline; c.summary.headlineLines = three.headlineLines;
+  await assert.rejects(load(c, { kind: 'summary' }), /SUMMARY_CONTENT_OVERFLOW page=7 region=paragraphs currentHeight=355px allowedHeight=337px/);
 });
 
 for (const kind of ['body', 'summary'] as const) for (const region of ['paragraphs', 'keySentence', 'headline'] as const) {

@@ -79,8 +79,8 @@ export function renderHtml(content: CarouselContent, slide: Slide, fontBase64: s
     .insight-image.cover-fallback{object-position:${t.insightImage.fallbackPosition};transform:scale(${t.insightImage.fallbackScale})}
     .insight-overlay{position:absolute;inset:0;background:rgba(0,0,0,${t.insightImage.overlayOpacity})}
     .anchored .summary-label{top:${t.insight.labelTop}px}
-    .anchored .body-copy{height:${t.content.emphasisBottomY - t.body.textTop}px}
-    .anchored .summary-copy{height:${t.content.emphasisBottomY - t.summary.textTop}px}
+    .anchored .body-copy{top:${t.body.titleTop + t.body.titleLine + t.content.titleToBodyGap}px;height:${t.content.emphasisBottomY - t.body.textTop}px}
+    .anchored .summary-copy{top:auto;bottom:${t.canvas.height - t.content.emphasisBottomY}px;height:auto}
     .anchored .copy>.key,.anchored .copy>.summary-key{position:absolute;bottom:0;left:0;width:100%;margin-top:0}
   `;
   const anchored = contentLayout === 'anchored' && (slide.kind === 'body' || slide.kind === 'summary');

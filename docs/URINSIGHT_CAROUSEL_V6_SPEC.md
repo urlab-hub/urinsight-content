@@ -1,7 +1,7 @@
 # URINSIGHT Carousel v6 — Baseline Specification
 
 - URINSIGHT Carousel Design: v6
-- Specification Revision: 1.4
+- Specification Revision: 1.5
 - Cover Image System: v1
 - Daily Workflow: v1
 - Last Updated: 2026-09-17
@@ -94,7 +94,7 @@ SUMMARY는 BODY를 다시 나열하거나 짧게 반복하는 페이지가 아�
 
 답해야 할 질문은 “앞의 여러 사실과 논거를 묶으면 어떤 구조가 보이는가?”다. BODY보다 한 단계 높은 해석을 제시한다. BODY에서 이미 사용한 핵심 문장을 그대로 다시 사용하지 않는다.
 
-## BODY / SUMMARY Vertical Anchor System — Revision 1.4
+## BODY / SUMMARY Vertical Anchor System — Revision 1.5
 
 “콘텐츠가 디자인을 밀어내는 것이 아니라, 콘텐츠가 고정된 editorial frame 안에 맞춰진다.”
 
@@ -107,10 +107,22 @@ SUMMARY는 BODY를 다시 나열하거나 짧게 반복하는 페이지가 아�
 | BODY 본문 시작 | body.textTop | Y 504 |
 | SUMMARY label | insight.labelTop / layout.left 공유 | Y 255 / X 110 |
 | SUMMARY headline 시작 | summary.titleTop | Y 394 |
-| SUMMARY 설명 시작 | summary.textTop | Y 689 |
+| SUMMARY 설명 시작 | headline 실제 하단 + content.titleToBodyGap | 1/2/3줄: Y 515 / 579 / 643 |
 | BODY/SUMMARY 마지막 강조문장 하단 | content.emphasisBottomY | Y 1103 |
 
 공통 하단 1103은 승인된 v6 sample SUMMARY의 기존 위치에서 산정했다: 본문 시작 689 + 문단 영역 334 + 강조문장 전 간격 37 + 강조문장 line-height 43 = 1103. reference 원본을 수정하지 않는다. BODY의 top anchors는 기존 좌표를 그대로 사용한다. SUMMARY label은 마지막 INSIGHT의 URINSIGHT와 같은 좌측/상단 기준선을 사용한다.
+
+### Shared Title-to-Body Gap — Revision 1.5
+
+SUMMARY headline은 1~2줄을 권장하며 최대 3줄까지 허용한다. 3줄인 경우 본문 설명을 더 압축하여 고정 bottom anchor를 침범하지 않도록 한다. font size나 anchor 위치는 변경하지 않는다.
+
+SUMMARY의 본문 시작점은 절대 Y좌표가 아니라 headline의 실제 마지막 줄 하단 + BODY와 동일한 title-to-body gap으로 계산한다. BODY와 SUMMARY는 동일한 소제목→본문 시각 간격을 사용한다. 마지막 강조문장은 기존 공통 bottom anchor Y=1103을 유지한다.
+
+`content.titleToBodyGap = 57px`: 기존 BODY 소제목 line box 하단 395 + 52 = 447에서 본문 Y=504까지의 실제 간격이다. BODY 레이아웃은 바꾸지 않는다. 여기서 하단은 기존 vertical frame과 동일한 line box 기준이며 glyph 잉크 경계가 아니다.
+
+SUMMARY headline 첫 줄 Y=394, line-height 64px를 유지한다. Pretendard 로드 후 실제 DOM 높이를 측정하므로 1/2/3줄 및 CSS 자동 wrapping에도 동일한 간격을 적용한다. 계산식은 `summaryBodyStartY = summaryHeadlineActualBottomY + content.titleToBodyGap`이다. label Y=255/X=110, headline font, highlight, bottom anchor는 유지한다. 절대 `summary.textTop=689`는 legacy generate 호환용으로만 남으며 Daily의 anchored mode에서는 사용하지 않는다.
+
+headline이 길어지면 본문 설명 영역이 줄어든다. 설명 압축 → 중복 문장 제거 → 3문단을 2문단으로 조정하고, 그래도 맞지 않으면 SUMMARY_CONTENT_OVERFLOW로 실패한다. 폰트 축소, bottom anchor 이동, headline 시작점을 위로 당기는 처리는 하지 않는다.
 
 ### Variable Middle-Content Zone / Content Fit Validation
 
@@ -119,9 +131,11 @@ SUMMARY는 BODY를 다시 나열하거나 짧게 반복하는 페이지가 아�
 | 페이지 | 강조문장 1줄 / 2줄 | 본문 최대 높이 1줄 / 2줄 | 본문 끝 한계 Y 1줄 / 2줄 |
 |---|---|---|---|
 | BODY | 43 / 86px | 525 / 482px | 1029 / 986 |
-| SUMMARY | 43 / 86px | 334 / 291px | 1023 / 980 |
+| SUMMARY headline 1줄 | 43 / 86px | 508 / 465px | 1023 / 980 |
+| SUMMARY headline 2줄 | 43 / 86px | 444 / 401px | 1023 / 980 |
+| SUMMARY headline 3줄 | 43 / 86px | 380 / 337px | 1023 / 980 |
 
-강조문장 앞 최소 간격은 기존 body.keyGap 31px / summary.keyGap 37px를 유지한다. 문단 사이 간격은 기존 26px다. 문단 영역이 짧아도 위쪽 시작점과 마지막 강조문장을 이동하지 않는다. 남는 공간은 본문 아래 여백으로 남긴다. headline의 하단이 본문 시작을 침범해서도 안 된다.
+강조문장 앞 최소 간격은 기존 body.keyGap 31px / summary.keyGap 37px를 유지한다. 문단 사이 간격은 기존 26px다. 문단 영역이 짧아도 headline 시작점과 마지막 강조문장을 이동하지 않는다. SUMMARY 본문 시작점만 headline 실제 높이를 따른다. 남는 공간은 본문 아래 여백으로 남긴다. headline의 하단이 본문 시작을 침범해서도 안 된다.
 
 실제 Pretendard 로드 후 DOM에서 높이를 측정한다. 본문 영역 초과, headline/본문 충돌, 강조문장 2줄 초과 또는 bottom anchor 이탈은 `BODY_CONTENT_OVERFLOW` / `SUMMARY_CONTENT_OVERFLOW`로 실패한다. 오류에는 page, region, currentHeight, allowedHeight 등 측정값과 편집할 영역을 표시한다. 가로 overflow와 subtitle single-line은 기존 validator도 함께 검사한다. 실패한 렌더는 final output으로 확정하거나 processed로 이동하지 않는다. validation.json의 contentFit에 페이지별 측정값을 기록한다.
 
@@ -754,6 +768,14 @@ not
 INSIGHT 이미지 항목은 1.3 제작 스펙의 검수 기준이다. Daily Runner는 asset 유효성과 렌더링 overflow/clipping을 검사한다. 같은 editorial series인지, 표현·이미지의 적합성과 실제 가독성이 충분한지는 사람이 확인한다.
 
 ## Changelog
+
+### Revision 1.5 — 2026-09-17
+
+- Added shared titleToBodyGap (57px), measured from the unchanged BODY layout.
+- SUMMARY explanation now follows the actual headline bottom after font loading.
+- Preserved SUMMARY top anchors and shared emphasis bottom Y=1103.
+- Added 1/2/3-line and CSS-wrapped headline tests and dynamic content-fit validation.
+- Preserved legacy generate, Daily image workflow and immutable references/tags.
 
 ### Revision 1.4 — 2026-09-17
 

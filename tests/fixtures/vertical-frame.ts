@@ -1,5 +1,14 @@
 import type { CarouselContent } from '../../src/schema/content.js';
 
+export function summaryHeadlineFixture(sample: CarouselContent, count: 1 | 2 | 3): CarouselContent {
+  const c = verticalFixture(sample, 'summary', 'short', 2);
+  const lines = count === 1 ? ['선택의 기준이 달라진다'] : count === 2 ? ['선택지가 늘어날수록', '선택의 기준이 달라진다'] : ['선택지가 늘어날수록', '사람들이 원하는 것은', '선택의 기준이다'];
+  c.summary.headlineLines = lines;
+  c.summary.headline = lines.join(' ');
+  c.summary.highlight = '기준';
+  return c;
+}
+
 /** Semantic paragraphs with authored phrase boundaries for reproducible fit tests. */
 export function verticalFixture(sample: CarouselContent, kind: 'body' | 'summary', length: 'short' | 'long', keyLines: 1 | 2): CarouselContent {
   const c = structuredClone(sample);
