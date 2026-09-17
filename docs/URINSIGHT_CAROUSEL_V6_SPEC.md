@@ -1,10 +1,10 @@
 # URINSIGHT Carousel v6 — Baseline Specification
 
 - URINSIGHT Carousel Design: v6
-- Specification Revision: 1.3
+- Specification Revision: 1.4
 - Cover Image System: v1
 - Daily Workflow: v1
-- Last Updated: 2026-09-16
+- Last Updated: 2026-09-17
 
 Carousel Design은 v6로 유지하며 v7로 변경하지 않는다. Specification Revision은 디자인 버전과 별도로 관리한다. Revision 1.2에서 확정한 편집 원칙과 highlight 규칙은 유지하고, Revision 1.3에서는 이미지가 포함된 INSIGHT와 Cover–Insight 시각적 연속성을 제작 규칙으로 정의한다.
 
@@ -13,6 +13,12 @@ Specification 1.3의 INSIGHT 이미지 layer와 package asset resolution을 구�
 Specification 1.2 복귀 기준 (수정·삭제하지 않음):
 - Commit: `9087e9d735fd15da64ff4831706b60f1648596b8`
 - Tag: `urinsight-operations-v1`
+
+Specification 1.3 복귀 기준 (수정·삭제하지 않음):
+- Commit: `dc42e3a690d7b4b14c6a0e8d4ac6474bb4048a96`
+- Tag: `urinsight-operations-v1.1`
+
+Revision 1.4는 BODY/SUMMARY의 고정 vertical frame을 추가한다. Daily Runner는 runtime `contentLayout: 'anchored'`를 전달한다. 기존 `pnpm generate <carousel.json>`과 옵션 없는 `generate()`는 legacy layout을 유지한다. carousel.json schema와 CLI 인터페이스는 변경하지 않는다. Cover/INSIGHT 이미지 시스템 1.3, 레이아웃, 폰트 크기, 좌우 여백, category color, highlight visual padding은 유지한다.
 
 ## Status
 - Version: v6
@@ -75,7 +81,7 @@ Specification 1.2 복귀 기준 (수정·삭제하지 않음):
 - No URINSIGHT brand label
 - SUMMARY label only
 - SUMMARY label color: current category color
-- Top vertical zone aligned with body-page top system
+- SUMMARY label uses the INSIGHT upper-label left/top anchor in the 1.4 operating frame (legacy generate retains its original position)
 - Summary headline: bold
 - Key phrase: category-color background + white text
 - Body: regular text
@@ -87,6 +93,48 @@ Specification 1.2 복귀 기준 (수정·삭제하지 않음):
 SUMMARY는 BODY를 다시 나열하거나 짧게 반복하는 페이지가 아니다.
 
 답해야 할 질문은 “앞의 여러 사실과 논거를 묶으면 어떤 구조가 보이는가?”다. BODY보다 한 단계 높은 해석을 제시한다. BODY에서 이미 사용한 핵심 문장을 그대로 다시 사용하지 않는다.
+
+## BODY / SUMMARY Vertical Anchor System — Revision 1.4
+
+“콘텐츠가 디자인을 밀어내는 것이 아니라, 콘텐츠가 고정된 editorial frame 안에 맞춰진다.”
+
+좌표는 1080×1350 canvas의 CSS px 기준이다. 위쪽 좌표는 text box 시작점, 하단은 마지막 강조문장 **line box의 하단**이다. 한 줄이면 아래에서 시작하고, 두 줄이면 위로 확장한다. 글자의 잉크 경계와 line box 경계는 구분한다.
+
+| 요소 | 고정 기준 / token | 값 |
+|---|---|---|
+| BODY 상단 우측 URINSIGHT | body.brandTop / layout.right | Y 303 / 오른쪽 110 |
+| BODY 소제목 | body.titleTop / layout.left | Y 395 / X 110 |
+| BODY 본문 시작 | body.textTop | Y 504 |
+| SUMMARY label | insight.labelTop / layout.left 공유 | Y 255 / X 110 |
+| SUMMARY headline 시작 | summary.titleTop | Y 394 |
+| SUMMARY 설명 시작 | summary.textTop | Y 689 |
+| BODY/SUMMARY 마지막 강조문장 하단 | content.emphasisBottomY | Y 1103 |
+
+공통 하단 1103은 승인된 v6 sample SUMMARY의 기존 위치에서 산정했다: 본문 시작 689 + 문단 영역 334 + 강조문장 전 간격 37 + 강조문장 line-height 43 = 1103. reference 원본을 수정하지 않는다. BODY의 top anchors는 기존 좌표를 그대로 사용한다. SUMMARY label은 마지막 INSIGHT의 URINSIGHT와 같은 좌측/상단 기준선을 사용한다.
+
+### Variable Middle-Content Zone / Content Fit Validation
+
+본문에 허용되는 높이 = 공통 하단 − 강조문장 실제 높이 − 최소 간격 − 본문 시작 Y.
+
+| 페이지 | 강조문장 1줄 / 2줄 | 본문 최대 높이 1줄 / 2줄 | 본문 끝 한계 Y 1줄 / 2줄 |
+|---|---|---|---|
+| BODY | 43 / 86px | 525 / 482px | 1029 / 986 |
+| SUMMARY | 43 / 86px | 334 / 291px | 1023 / 980 |
+
+강조문장 앞 최소 간격은 기존 body.keyGap 31px / summary.keyGap 37px를 유지한다. 문단 사이 간격은 기존 26px다. 문단 영역이 짧아도 위쪽 시작점과 마지막 강조문장을 이동하지 않는다. 남는 공간은 본문 아래 여백으로 남긴다. headline의 하단이 본문 시작을 침범해서도 안 된다.
+
+실제 Pretendard 로드 후 DOM에서 높이를 측정한다. 본문 영역 초과, headline/본문 충돌, 강조문장 2줄 초과 또는 bottom anchor 이탈은 `BODY_CONTENT_OVERFLOW` / `SUMMARY_CONTENT_OVERFLOW`로 실패한다. 오류에는 page, region, currentHeight, allowedHeight 등 측정값과 편집할 영역을 표시한다. 가로 overflow와 subtitle single-line은 기존 validator도 함께 검사한다. 실패한 렌더는 final output으로 확정하거나 processed로 이동하지 않는다. validation.json의 contentFit에 페이지별 측정값을 기록한다.
+
+### Content Authoring / Fit Before Font Resize
+
+- BODY: subtitle 1줄, semantic paragraphs 2~3개, key sentence 1~2줄.
+- SUMMARY: label fixed, headline fixed start, 설명 2~3문단, 마지막 강조문장 1~2줄, bottom anchor fixed.
+- SUMMARY가 길어져 하단을 밀어내면 요약을 더 압축한다.
+- 콘텐츠가 넘치면 중복 제거 → 문장 간결화 → 필요 시 3문단을 2문단으로 압축한다.
+- 문단 간격의 소폭 축소는 편집 검토 후 공통 token 차원에서만 검토한다. 현재 renderer는 26px를 유지하며 페이지마다 자동 축소하지 않는다.
+- 그래도 맞지 않으면 validation error / editorial review 대상이다. 실제 정보량이 많을 때만 BODY를 추가하여 총 9~10페이지로 확장한다.
+- 본문·소제목 font size 자동 축소, line-height 과도한 축소, 소제목 위로 당기기, 강조문장 아래로 밀기, 콘텐츠별 anchor 변경은 금지한다.
+- Cover/INSIGHT layout, 이미지 pairing, category colors, typography hierarchy, 좌우 margin, highlight left max 5px / right max 7px와 legacy mode는 변경하지 않는다.
 
 ## 8P Final / INSIGHT
 
@@ -706,6 +754,16 @@ not
 INSIGHT 이미지 항목은 1.3 제작 스펙의 검수 기준이다. Daily Runner는 asset 유효성과 렌더링 overflow/clipping을 검사한다. 같은 editorial series인지, 표현·이미지의 적합성과 실제 가독성이 충분한지는 사람이 확인한다.
 
 ## Changelog
+
+### Revision 1.4 — 2026-09-17
+
+- Added fixed vertical anchors for BODY.
+- Added fixed vertical anchors for SUMMARY.
+- Unified final emphasis bottom line at Y=1103.
+- Added variable middle-content zone.
+- Added editorial fit-before-font-resize rule.
+- Added BODY/SUMMARY overflow validation with measured limits.
+- Daily Runner opts into the anchored frame; legacy generate and Specification 1.3 image mode remain supported.
 
 ### Revision 1.3 — 2026-09-16
 

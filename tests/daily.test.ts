@@ -8,7 +8,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import sharp from 'sharp';
 import { runDaily, resolveCover, parseDailyArgs, exists } from '../src/daily/runner.js';
-import { projectRoot, seoulDate } from '../src/renderer/render.js';
+import { projectRoot, seoulDate, generate } from '../src/renderer/render.js';
 
 const sample = JSON.parse(await readFile(path.join(projectRoot, 'content/sample-insight.json'), 'utf8'));
 const exec = promisify(execFile);
@@ -113,7 +113,7 @@ test('render failure cleans temp, keeps inbox, continues to success; sources and
   const manifest = JSON.parse(await readFile(path.join(out, 'manifest.json'), 'utf8'));
   assert.equal(manifest.pageCount, 8); assert.equal(manifest.cover.status, 'placeholder');
   assert.equal(manifest.outputs.length, 9); assert.deepEqual(await readdir(path.join(root, '.tmp')), []);
-  // Existing CLI, in an isolated working folder, produces identical approved PNGs.
+  // Legacy CLI remains available; Daily uses the opt-in anchored frame.
   const generatedSlug = `daily-regression-${path.basename(root).toLowerCase()}`;
   const c = structuredClone(sample); c.slug = generatedSlug;
   const file = path.join(root, 'generate.json'); await writeFile(file, JSON.stringify(c));
@@ -121,7 +121,10 @@ test('render failure cleans temp, keeps inbox, continues to success; sources and
   try {
     const cli = await exec(process.execPath, [path.join(projectRoot, 'node_modules/tsx/dist/cli.mjs'), path.join(projectRoot, 'src/cli/generate.ts'), file], { cwd: root });
     assert.match(cli.stdout, /Generated 8/);
-    for (const name of manifest.outputs) assert.deepEqual(await readFile(path.join(out, name)), await readFile(path.join(generated, name)));
+    for (const name of ['01_cover.png', '08_insight.png']) assert.deepEqual(await readFile(path.join(out, name)), await readFile(path.join(generated, name)));
+    const anchored = await generate(file, { outputRoot: path.join(root, 'anchored'), contentLayout: 'anchored' });
+    for (const name of manifest.outputs) assert.deepEqual(await readFile(path.join(out, name)), await readFile(path.join(anchored.directory, name)));
+    assert.notDeepEqual(await readFile(path.join(out, '02_body.png')), await readFile(path.join(generated, '02_body.png')));
   } finally { await rm(generated, { recursive: true, force: true }); }
 }));
 for (const count of [9, 10]) test(`daily renders ${count} pages with detected cover without modifying JSON`, async () => isolated(async root => {

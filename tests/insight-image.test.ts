@@ -56,7 +56,7 @@ for (const mode of ['provided', 'cover-fallback', 'placeholder-fallback'] as con
   assert.ok(!await exists(path.join(out, 'insight.png')));
   const meta = await sharp(path.join(out, '08_insight.png')).metadata(); assert.equal(meta.width, 1080); assert.equal(meta.height, 1350);
   const legacyFile = path.join(root, 'legacy.json'); await writeFile(legacyFile, JSON.stringify(sample));
-  const legacy = await generate(legacyFile, { outputRoot: path.join(root, 'legacy'), provider: { resolve: async () => cover.image } });
+  const legacy = await generate(legacyFile, { outputRoot: path.join(root, 'legacy'), contentLayout: 'anchored', provider: { resolve: async () => cover.image } });
   for (let i = 1; i <= 7; i++) {
     const name = `${String(i).padStart(2, '0')}_${i === 1 ? 'cover' : i === 7 ? 'summary' : 'body'}.png`;
     assert.deepEqual(await readFile(path.join(out, name)), await readFile(path.join(legacy.directory, name)));

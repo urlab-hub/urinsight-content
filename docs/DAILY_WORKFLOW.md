@@ -122,3 +122,11 @@ package에 cover와 같은 사진 시리즈처럼 보이는 `insight.png`를 추
 manifest.insight.status는 provided / cover-fallback / placeholder-fallback 중 하나다. source는 읽은 원본 경로이며, package 이동 전 경로를 provenance로 기록한다. 원본 insight 파일은 processed에 보존한다. output에는 원본 이미지를 별도 복사하지 않는다.
 
 `pnpm daily -- --dry-run`도 insight 탐색·decode·fallback 상태를 확인한다. 기존 `pnpm generate <carousel.json>`은 optional runtime insightImage가 없으므로 종전 v6 dark INSIGHT 결과를 유지한다. 자동 사진 검색/생성이나 외부 API 호출은 하지 않는다.
+
+## Specification 1.4: 고정된 본문 프레임
+
+`pnpm daily`는 BODY와 SUMMARY의 상단 위치, 마지막 강조문장 하단(Y=1103)을 고정한다. 본문 분량이 달라도 강조문장은 아래에 정렬된다. 1~2줄 강조문장 위의 공간에 원고를 맞춘다.
+
+`BODY_CONTENT_OVERFLOW` 또는 `SUMMARY_CONTENT_OVERFLOW`가 나오면 오류의 page/region/currentHeight/allowedHeight를 확인하고 해당 원고를 줄인다. 중복 제거, 문장 간결화, 3문단을 2문단으로 압축하는 순서로 편집한다. 폰트를 줄이거나 마지막 문장을 아래로 밀지 않는다. 오류 package는 inbox에 남는다.
+
+기존 `pnpm generate <carousel.json>`은 v6 legacy 배치를 유지한다. Daily Runner만 runtime `contentLayout: 'anchored'`를 전달하며 원본 JSON은 바꾸지 않는다. dry-run은 파일/schema/이미지/경로 검사이고 실제 높이 검증은 생성 시 수행한다. Cover와 INSIGHT의 1.3 이미지 규칙은 그대로다.

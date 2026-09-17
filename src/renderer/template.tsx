@@ -16,6 +16,7 @@ function Paragraphs({ paragraphs, lines }: { paragraphs: string[]; lines?: strin
 }
 export type Slide = { kind: 'cover' } | { kind: 'body'; index: number } | { kind: 'summary' } | { kind: 'insight' };
 export type InsightImage = { kind: 'provided' | 'cover-fallback'; dataUrl: string } | { kind: 'placeholder-fallback' };
+export type ContentLayout = 'legacy' | 'anchored';
 export function slidesFor(content: CarouselContent): Slide[] {
   return [{ kind: 'cover' }, ...content.body.map((_, index) => ({ kind: 'body' as const, index })), { kind: 'summary' }, { kind: 'insight' }];
 }
@@ -47,7 +48,7 @@ function SlideContent({ content: c, slide, image, insightImage }: { content: Car
     </>;
   }
 }
-export function renderHtml(content: CarouselContent, slide: Slide, fontBase64: string, image?: string, insightImage?: InsightImage): string {
+export function renderHtml(content: CarouselContent, slide: Slide, fontBase64: string, image?: string, insightImage?: InsightImage, contentLayout: ContentLayout = 'legacy'): string {
   const css = `
     @font-face{font-family:Pretendard;src:url(data:font/woff2;base64,${fontBase64}) format('woff2');font-style:normal;font-weight:100 900;font-display:block}
     *{box-sizing:border-box}html,body{margin:0;width:${t.canvas.width}px;height:${t.canvas.height}px}body{font-family:${t.font.family};font-weight:${t.font.regular};font-synthesis:none;-webkit-font-smoothing:antialiased}
@@ -77,6 +78,11 @@ export function renderHtml(content: CarouselContent, slide: Slide, fontBase64: s
     .insight-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${t.insightImage.position}}
     .insight-image.cover-fallback{object-position:${t.insightImage.fallbackPosition};transform:scale(${t.insightImage.fallbackScale})}
     .insight-overlay{position:absolute;inset:0;background:rgba(0,0,0,${t.insightImage.overlayOpacity})}
+    .anchored .summary-label{top:${t.insight.labelTop}px}
+    .anchored .body-copy{height:${t.content.emphasisBottomY - t.body.textTop}px}
+    .anchored .summary-copy{height:${t.content.emphasisBottomY - t.summary.textTop}px}
+    .anchored .copy>.key,.anchored .copy>.summary-key{position:absolute;bottom:0;left:0;width:100%;margin-top:0}
   `;
-  return '<!doctype html>' + renderToStaticMarkup(<html lang="ko"><head><meta charSet="utf-8"/><title>{content.slug}</title><style>{css}</style></head><body><main className={`slide ${slide.kind}`}><SlideContent content={content} slide={slide} image={image} insightImage={insightImage}/></main></body></html>);
+  const anchored = contentLayout === 'anchored' && (slide.kind === 'body' || slide.kind === 'summary');
+  return '<!doctype html>' + renderToStaticMarkup(<html lang="ko"><head><meta charSet="utf-8"/><title>{content.slug}</title><style>{css}</style></head><body><main className={`slide ${slide.kind}${anchored ? ' anchored' : ''}`} data-page={anchored ? (slide.kind === 'body' ? slide.index + 2 : content.body.length + 2) : undefined}><SlideContent content={content} slide={slide} image={image} insightImage={insightImage}/></main></body></html>);
 }

@@ -125,7 +125,7 @@ export async function runDaily(options: DailyOptions) {
         const runtimeFile = path.join(temp, 'carousel.json');
         await writeFile(runtimeFile, JSON.stringify(content));
         log(`✓ Rendering ${content.body.length + 3} pages`);
-        const rendered = await generate(runtimeFile, { outputRoot: path.join(temp, 'render'), date, provider: { resolve: async () => cover.image }, insightImage: insight.runtime });
+        const rendered = await generate(runtimeFile, { outputRoot: path.join(temp, 'render'), date, provider: { resolve: async () => cover.image }, insightImage: insight.runtime, contentLayout: 'anchored' });
         log('✓ Contact sheet created');
         for (const source of sources) await copyFile(path.join(input, source), path.join(rendered.directory, source));
         if (sources.length) log('✓ Sources copied');

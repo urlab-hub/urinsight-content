@@ -3,7 +3,7 @@ import { tokens } from '../config/tokens.js';
 
 /** Browser-side ink metrics also avoid highlighting the font's ascent/descent whitespace. */
 export async function prepareAndValidate(page: Page) {
-  return page.evaluate(async ({ width, height }) => {
+  return page.evaluate(async ({ width, height, frame }) => {
     await document.fonts.ready;
     if (![...document.fonts].some(face => face.family === 'Pretendard' && face.status === 'loaded') || !document.fonts.check('700 40px Pretendard', '정보 판단')) throw new Error('Pretendard did not load');
     await Promise.all([...document.images].map(img => img.decode()));
@@ -72,6 +72,25 @@ export async function prepareAndValidate(page: Page) {
     }
     const slide = document.querySelector<HTMLElement>('.slide')!;
     const rect = slide.getBoundingClientRect();
+    let contentFit;
+    if (slide.classList.contains('anchored')) {
+      const kind = slide.classList.contains('body') ? 'BODY' : 'SUMMARY';
+      const copy = slide.querySelector<HTMLElement>('.copy')!;
+      const key = copy.querySelector<HTMLElement>('.key,.summary-key')!;
+      const title = slide.querySelector<HTMLElement>('h2')!;
+      const paragraphs = [...copy.querySelectorAll<HTMLElement>(':scope > p:not(.key):not(.summary-key)')];
+      const start = copy.getBoundingClientRect().top;
+      const keyRect = key.getBoundingClientRect();
+      const gap = kind === 'BODY' ? frame.bodyGap : frame.summaryGap;
+      const currentHeight = Math.max(0, ...paragraphs.map(p => p.getBoundingClientRect().bottom - start));
+      const allowedHeight = keyRect.top - gap - start;
+      const titleRect = title.getBoundingClientRect();
+      contentFit = { page: Number(slide.dataset.page), kind, contentStartY: start, currentHeight, allowedHeight, emphasisBottomY: keyRect.bottom, keyLines: keyRect.height / frame.keyLine };
+      if (currentHeight > allowedHeight + .5) errors.push(`${kind}_CONTENT_OVERFLOW page=${slide.dataset.page} region=paragraphs currentHeight=${currentHeight}px allowedHeight=${allowedHeight}px; Shorten/edit paragraphs; do not resize fonts or move anchors.`);
+      if (titleRect.bottom > start) errors.push(`${kind}_CONTENT_OVERFLOW page=${slide.dataset.page} region=headline currentHeight=${titleRect.height}px allowedHeight=${start - titleRect.top}px; Shorten headline.`);
+      if (keyRect.height > frame.keyLine * frame.maxKeyLines + .5) errors.push(`${kind}_CONTENT_OVERFLOW page=${slide.dataset.page} region=keySentence currentHeight=${keyRect.height}px allowedHeight=${frame.keyLine * frame.maxKeyLines}px; Edit key sentence to 1–2 lines.`);
+      if (Math.abs(keyRect.bottom - frame.bottom) > .5) errors.push(`${kind}_CONTENT_OVERFLOW page=${slide.dataset.page} region=keySentence bottom=${keyRect.bottom}px expectedBottom=${frame.bottom}px`);
+    }
     if (rect.width !== width || rect.height !== height) errors.push(`Canvas is ${rect.width}x${rect.height}`);
     const elements = [...document.querySelectorAll<HTMLElement>('[data-check]')];
     for (const el of elements) {
@@ -95,6 +114,6 @@ export async function prepareAndValidate(page: Page) {
     }
     if (document.documentElement.scrollWidth > width || document.documentElement.scrollHeight > height) errors.push('Document overflow');
     if (errors.length) throw new Error(errors.join('\n'));
-    return { canvas: { width, height }, checkedElements: elements.length, highlights: document.querySelectorAll('[data-highlight]').length, font: 'Pretendard', passed: true };
-  }, tokens.canvas);
+    return { canvas: { width, height }, checkedElements: elements.length, highlights: document.querySelectorAll('[data-highlight]').length, font: 'Pretendard', passed: true, ...(contentFit ? { contentFit } : {}) };
+  }, { ...tokens.canvas, frame: { bottom: tokens.content.emphasisBottomY, maxKeyLines: tokens.content.maxKeyLines, keyLine: tokens.body.keyLine, bodyGap: tokens.body.keyGap, summaryGap: tokens.summary.keyGap } });
 }
