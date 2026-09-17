@@ -1,7 +1,7 @@
 # URINSIGHT Carousel v6 — Baseline Specification
 
 - URINSIGHT Carousel Design: v6
-- Specification Revision: 1.5
+- Specification Revision: 1.6
 - Cover Image System: v1
 - Daily Workflow: v1
 - Last Updated: 2026-09-17
@@ -651,11 +651,29 @@ Avoid:
 To unify images from different sources:
 - slightly reduce saturation when needed
 - maintain moderate contrast
-- add subtle dark overlay if text readability requires it
+- apply localized text-area readability treatment if needed; follow the rule below rather than darkening the entire image
 - add light film grain / texture if appropriate
 - reduce overly crisp commercial-stock appearance
 - preserve natural skin tones for real people
 - do not force the category color into the entire image
+
+### Localized COVER Readability Treatment — Revision 1.6
+
+COVER는 이미지 전체를 어둡게 누르기보다 텍스트가 올라가는 영역만 선택적으로 보정한다. 기본 원칙은 이미지의 자연스러운 명암과 editorial 무드 보존이다.
+
+제목·브랜드·#카테고리의 가독성이 부족한 경우, 해당 텍스트 블록 주변에 한해 다음 중 하나 또는 복합 방식으로 보정할 수 있다.
+
+- 국소 dark scrim
+- 국소 gradient overlay
+- 국소 shadow / contrast reinforcement
+
+보정은 텍스트 영역 중심으로만 적용한다. 배경 이미지 전체를 동일 농도로 어둡게 처리하는 full-frame dark overlay는 기본값으로 사용하지 않는다. 보정 영역의 경계나 효과가 과도하게 드러나지 않도록 하며 이미지의 자연스러운 명암을 유지한다.
+
+### COVER / INSIGHT Brightness Relationship
+
+INSIGHT 마지막 페이지는 기존처럼 더 깊고 어두운 톤을 유지할 수 있다. COVER는 INSIGHT보다 상대적으로 조금 더 밝고 자연스럽게 유지한다. 단, 제목 가독성이 우선이며 필요 시 COVER 텍스트 영역만 선택적으로 보정한다.
+
+이 규칙은 디자인·가독성 기준이다. 작업 순서, package 구조, FLOW 문서 및 기존 INSIGHT 이미지 처리 방식은 변경하지 않는다. 이번 revision에서 renderer의 국소 보정 기능을 구현하거나 적용했다는 의미는 아니다.
 
 ## Category Color Usage on Cover
 
@@ -742,6 +760,11 @@ not
 - [ ] 제목 영역 negative space가 확보됐는가
 - [ ] AI-art 느낌이 과하지 않은가
 - [ ] category color가 사진 전체를 지배하지 않는가
+- [ ] 제목 3줄이 첫눈에 읽히는가
+- [ ] highlight가 배경과 겹쳐 묻히지 않는가
+- [ ] 텍스트 뒤 보정 영역이 과도하게 티 나지 않는가
+- [ ] 이미지 전체가 불필요하게 탁해지거나 무드가 죽지 않았는가
+- [ ] COVER가 INSIGHT보다 과하게 어두워지지 않았는가
 
 ### LAYOUT
 
@@ -768,6 +791,12 @@ not
 INSIGHT 이미지 항목은 1.3 제작 스펙의 검수 기준이다. Daily Runner는 asset 유효성과 렌더링 overflow/clipping을 검사한다. 같은 editorial series인지, 표현·이미지의 적합성과 실제 가독성이 충분한지는 사람이 확인한다.
 
 ## Changelog
+
+### Revision 1.6 — 2026-09-17
+
+- Added localized cover readability treatment rule. Cover now prioritizes text-area-only correction instead of global darkening.
+- Clarified COVER / INSIGHT brightness relationship and added COVER readability quality checks.
+- Documentation-only update; retained Carousel Design v6, workflow and package structure.
 
 ### Revision 1.5 — 2026-09-17
 
