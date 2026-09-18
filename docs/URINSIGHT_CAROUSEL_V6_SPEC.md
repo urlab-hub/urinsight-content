@@ -1,7 +1,7 @@
 # URINSIGHT Carousel v6 — Baseline Specification
 
 - URINSIGHT Carousel Design: v6
-- Specification Revision: 1.9
+- Specification Revision: 1.10
 - Cover Image System: v1
 - Daily Workflow: v1
 - Last Updated: 2026-09-18
@@ -290,6 +290,79 @@ INSIGHT에서 SF/우주 표현은 주제 자체가 SF/우주를 직접 다루는
 - Do not force data or quotations when evidence is weak
 - Exaggeration allowed in hook/copy, but factual claims must remain defensible
 - Politics and direct investment recommendations excluded
+
+## Korean-first Technical Term Rule
+
+URINSIGHT의 기본 독자는 영어 논문이나 전문용어에 익숙하다고 가정하지 않는다.
+
+### 1. 일반 개념·학술용어·기술용어
+
+가능하면 자연스러운 한국어 표현을 우선한다.
+
+- feature interference → 정보 간 간섭 / 특징 간 간섭
+- task uncertainty → 과제의 불확실성 / 무엇을 해야 할지 불확실한 상태
+- working memory → 작업기억
+- workflow redesign → 업무 흐름 재설계
+- operating model → 운영 방식 / 운영모델
+- cognitive load → 인지 부담
+- resumption lag → 업무 재개 지연 / 다시 몰입하는 데 걸리는 시간
+
+영어 원어를 그대로 본문에 넣는 것이 정보 전달에 꼭 필요하지 않다면 한국어로 풀어쓴다.
+
+### 2. 영어 원어가 필요한 경우
+
+전문용어의 정확한 명칭 자체가 의미가 있거나, 원문 검색·출처 확인에 도움이 되는 경우에만 첫 등장 시 다음처럼 사용할 수 있다.
+
+- 정보 간 간섭(feature interference)
+- 작업기억(working memory)
+
+이후 페이지나 같은 콘텐츠 안에서는 한국어 표현만 사용한다. 영어 원어를 반복해서 병기하지 않는다.
+
+### 3. 고유명사
+
+다음은 원문 표기를 허용한다.
+
+- 인물명
+- 기업명
+- 기관명
+- 브랜드명
+- 서비스명
+- 제품명
+- 행사명
+- 연구명 또는 공식 프로그램명
+
+예: McKinsey, Harvard Business Review, NVIDIA, CES 2026, ChatGPT.
+
+다만 한국 독자에게 널리 알려진 공식 한국어 명칭이 자연스러우면 한국어 표기를 우선하거나 병기할 수 있다.
+
+- 한국은행
+- 세계경제포럼(WEF)
+
+### 4. 문장 작성 원칙
+
+독자가 영어 단어를 해석해야만 문장을 이해할 수 있게 쓰지 않는다. 출처의 영어 표현을 직역하기보다 URINSIGHT 독자가 즉시 이해할 수 있는 자연스러운 한국어 문장으로 다시 쓴다.
+
+나쁜 예:
+“연구진은 feature interference가 task uncertainty의 behavioral cost를 설명한다고 밝혔다.”
+
+좋은 예:
+“연구진은 여러 정보가 서로 경쟁하며 판단을 방해하는 현상이 불확실한 상황에서 성과가 떨어지는 이유 중 하나라고 설명했다.”
+
+### 5. 정확성 유지
+
+한국어로 쉽게 풀더라도 원문의 의미를 과장하거나 바꾸지 않는다. 전문용어를 쉬운 표현으로 바꿀 때:
+
+- 인과관계를 새로 만들지 않는다.
+- 연구 결과보다 강하게 단정하지 않는다.
+- 필요한 경우 ‘한 원인’, ‘한 기제’, ‘관련될 수 있다’ 등 원출처의 강도를 유지한다.
+
+### 6. COVER / BODY / SUMMARY / INSIGHT 적용
+
+이 원칙은 모든 카피에 적용한다. 특히 BODY 설명에서는 전문용어를 그대로 나열하기보다 ‘무슨 뜻인지’를 먼저 한국어로 설명한다.
+
+COVER와 INSIGHT에서는 영어 전문용어 사용을 더욱 최소화한다. 짧고 즉시 이해되는 한국어 표현을 우선한다.
+
+이 변경은 편집 지침만 보강한다. 기존 anchor, typography, overlay, BODY density, package structure 및 Daily workflow는 변경하지 않는다.
 
 ## Editorial Deduplication / Narrative Progression
 
@@ -798,6 +871,11 @@ not
 - [ ] SUMMARY가 BODY recap에 그치지 않는가
 - [ ] INSIGHT가 SUMMARY 축약에 그치지 않는가
 - [ ] 데이터/인용이 출처와 일치하는가
+- [ ] 영어 전문용어 없이도 핵심 내용을 이해할 수 있는가
+- [ ] 일반 개념·학술용어는 자연스러운 한국어로 풀었는가
+- [ ] 영어 원어 병기는 꼭 필요한 첫 등장에만 사용했는가
+- [ ] 인물·기업·기관·행사 등 고유명사와 일반 개념을 구분했는가
+- [ ] 쉬운 표현으로 바꾸면서 원출처의 의미나 강도를 왜곡하지 않았는가
 
 ### COVER
 
@@ -836,6 +914,14 @@ not
 INSIGHT 이미지 항목은 1.3 제작 스펙의 검수 기준이다. Daily Runner는 asset 유효성과 렌더링 overflow/clipping을 검사한다. 같은 editorial series인지, 표현·이미지의 적합성과 실제 가독성이 충분한지는 사람이 확인한다.
 
 ## Changelog
+
+### Revision 1.10 — 2026-09-18
+
+- Added Korean-first technical-term editorial guidance.
+- General academic and technical concepts should be written in natural Korean whenever possible.
+- English originals may appear once when useful for precision or source lookup.
+- Proper nouns such as people, companies, institutions, brands and events may retain their official names.
+- Added editorial checks for readability and meaning preservation.
 
 ### Revision 1.9 — 2026-09-18
 
