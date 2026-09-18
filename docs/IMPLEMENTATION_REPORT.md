@@ -1,5 +1,7 @@
 # 1단계 구현 보고서 · 2026-09-16
 
+> 이 문서의 절대경로는 구현 당시의 역사적 기록이며 현재 실행 경로가 아닙니다. 현재 운영 절차는 `docs/DAILY_WORKFLOW.md`를 따릅니다.
+
 ## 1. 생성한 프로젝트 구조
 
 `docs/`, `references/v6/`, `src/config/`, `src/schema/`, `src/renderer/`, `src/cli/`, `content/`, `output/`, `tests/`.

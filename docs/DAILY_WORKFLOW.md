@@ -6,12 +6,12 @@
 
 1. ChatGPT에 “오늘 URINSIGHT 만들어줘”라고 요청한다. 기존 v6 carousel JSON 형식을 전달하고 package를 받는다.
 2. 받은 ZIP 또는 package를 압축 해제한다. 이 프로그램은 ZIP 압축을 자동으로 풀지 않는다.
-3. `carousel.json`이 바로 들어 있는 폴더를 `C:\Users\Jungsoo Bae\Documents\ChatGPT\URINSIGHT\inbox\` 아래에 넣는다.
+3. `carousel.json`이 바로 들어 있는 폴더를 `C:\Users\Jungsoo Bae\Documents\ChatGPT\URINSIGHT_콘텐츠\urinsight-contents\inbox\` 아래에 넣는다.
 4. PowerShell을 연다.
 5. 프로젝트로 이동한다.
 
 ```powershell
-cd "C:\Users\Jungsoo Bae\Documents\ChatGPT\URINSIGHT"
+cd "C:\Users\Jungsoo Bae\Documents\ChatGPT\URINSIGHT_콘텐츠\urinsight-contents"
 ```
 
 6. 먼저 dry-run으로 입력을 확인한다.
